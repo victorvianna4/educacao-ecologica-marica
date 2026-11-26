@@ -1,55 +1,37 @@
 const { kv } = require("@vercel/kv");
-const { allowCors, ok, badRequest, readJsonBody, internalError } = require("./_shared");
+const { allowCors, ok, badRequest, readJsonBody, internalError, P, bumpDaily, cleanId, syncById } = require("./_shared");
 
 module.exports = async (req, res) => {
   try {
     allowCors(res);
     if (req.method === "OPTIONS") return ok(res, { ok: true });
-
     if (req.method !== "POST") {
       res.statusCode = 405;
       return ok(res, { error: "Method not allowed" });
     }
 
     const body = await readJsonBody(req).catch(() => ({}));
-    const id = String(body.id || "").trim();
+    const id = cleanId(body.id);
     const stars = Number(body.stars);
-    const oldStars = Number(body.oldStars) || 0; // Recebe a nota antiga (se for edição)
+    const oldStars = Number(body.oldStars) || 0; // nota antiga (se for edição)
 
     if (!id) return badRequest(res, "Missing id");
-    if (!Number.isFinite(stars) || stars < 1 || stars > 5) {
-      return badRequest(res, "Invalid stars");
-    }
+    if (!Number.isFinite(stars) || stars < 1 || stars > 5) return badRequest(res, "Invalid stars");
+    if (oldStars < 0 || oldStars > 5) return badRequest(res, "Invalid oldStars");
 
-    const key = `ecomarica:point:${id}`;
-
-    // LÓGICA DE EDIÇÃO:
-    // Se for edição (oldStars > 0), incrementa os votos em 0. Se for novo, incrementa em 1.
+    const key = `${P}:point:${id}`;
+    // Edição: não soma voto novo, só ajusta a diferença. Voto novo: soma 1 voto e as estrelas.
     const countIncrement = oldStars > 0 ? 0 : 1;
-    // Se for edição, a diferença a ser somada é (stars - oldStars). Se for novo, soma as próprias estrelas.
-    const sumIncrement = oldStars > 0 ? (stars - oldStars) : stars;
+    const sumIncrement = oldStars > 0 ? stars - oldStars : stars;
 
-    const ratingCount = await kv.hincrby(key, "ratingCount", countIncrement);
-    const ratingSum = await kv.hincrby(key, "ratingSum", sumIncrement);
-    const clicks = Number((await kv.hget(key, "clicks")) || 0);
+    await kv.hincrby(key, "ratingCount", countIncrement);
+    await kv.hincrby(key, "ratingSum", sumIncrement);
+    const now = new Date().toISOString();
+    await kv.hset(key, { lastRatedAt: now, updatedAt: now });
+    await bumpDaily(kv, "ratings", countIncrement);
 
-    await kv.hset(key, { lastRatedAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
-
-    // Passamos o objeto direto, sem JSON.stringify
-    await kv.hset("ecomarica:byId", {
-      [id]: {
-        clicks,
-        ratingCount: Number(ratingCount),
-        ratingSum: Number(ratingSum),
-      },
-    });
-
-    ok(res, {
-      id,
-      clicks,
-      ratingCount: Number(ratingCount),
-      ratingSum: Number(ratingSum),
-    });
+    const entry = await syncById(kv, id);
+    ok(res, { id, ...entry });
   } catch (err) {
     console.error("api/rate", err);
     allowCors(res);

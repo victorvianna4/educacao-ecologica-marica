@@ -1,14 +1,14 @@
 const { kv } = require("@vercel/kv");
-const { allowCors, ok } = require("./_shared");
+const { allowCors, ok, P } = require("./_shared");
 
 module.exports = async (req, res) => {
   allowCors(res);
   if (req.method === "OPTIONS") return ok(res, { ok: true });
 
-  const byId = (await kv.hgetall("ecomarica:byId")) || {};
+  const byId = (await kv.hgetall(`${P}:byId`)) || {};
   
   // NOVO: Busca os IDs que estão ativos no site
-  const activeIds = (await kv.get("ecomarica:activeIds")) || [];
+  const activeIds = (await kv.get(`${P}:activeIds`)) || [];
   const activeSet = new Set(activeIds);
 
   const filteredById = {};
@@ -33,8 +33,12 @@ module.exports = async (req, res) => {
       clicks: Number(data.clicks || 0),
       ratingCount: Number(data.ratingCount || 0),
       ratingSum: Number(data.ratingSum || 0),
+      likes: Math.max(0, Number(data.likes || 0)),
+      visits: Number(data.visits || 0),
+      comments: Number(data.comments || 0),
     };
   }
 
+  res.setHeader("Cache-Control", "no-store");
   ok(res, { byId: filteredById });
 };

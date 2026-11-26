@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel • Educação Ecológica em Maricá</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --panel: rgba(30, 41, 59, 0.7);
+        --panel-hover: rgba(30, 41, 59, 0.9);
+        --line: rgba(148, 163, 184, 0.15);
+        --text: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-glow: rgba(56, 189, 248, 0.4);
+        --success: #34d399;
+        --warning: #fbbf24;
+        --radius: 16px;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(135deg, #020617, #0f172a, #1e1b4b);
+        color: var(--text);
+        min-height: 100vh;
+      }
+      .container { max-width: 1280px; margin: 0 auto; padding: 32px 20px; }
+      
+      /* Cabeçalho */
+      .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--line); padding-bottom: 24px; }
+      .header-info h1 { font-size: 28px; margin: 0 0 8px 0; font-weight: 800; letter-spacing: -0.5px; }
+      .header-info p { margin: 0; color: var(--muted); font-size: 15px; }
+      .btn {
+        color: var(--text); text-decoration: none; border: 1px solid var(--line);
+        padding: 10px 18px; border-radius: 10px; background: rgba(255, 255, 255, 0.05);
+        transition: all 0.2s ease; font-weight: 500; font-size: 14px;
+      }
+      .btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--muted); }
+
+      /* Filtros */
+      .filters {
+        display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
+        background: var(--panel); padding: 16px; border-radius: var(--radius);
+        border: 1px solid var(--line); backdrop-filter: blur(10px);
+      }
+      .filter-group { display: flex; align-items: center; gap: 10px; }
+      .filter-group label { font-size: 14px; color: var(--muted); font-weight: 500; }
+      .select {
+        background: #0f172a; color: var(--text); border: 1px solid var(--line);
+        border-radius: 8px; padding: 8px 12px; outline: none; font-size: 14px;
+        transition: border-color 0.2s;
+      }
+      .select:focus { border-color: var(--accent); }
+
+      /* KPIs */
+      .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+      .kpi-card {
+        background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 20px; display: flex; flex-direction: column; gap: 8px;
+        backdrop-filter: blur(10px); transition: transform 0.2s;
+      }
+      .kpi-card:hover { transform: translateY(-2px); background: var(--panel-hover); }
+      .kpi-label { color: var(--muted); font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+      .kpi-value { font-size: 32px; font-weight: 800; color: var(--text); }
+      .kpi-value.highlight { color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); }
+
+      /* Grid de Gráficos */
+      .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
+      .charts-grid-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;}
+      @media (max-width: 992px) {
+        .charts-grid, .charts-grid-bottom { grid-template-columns: 1fr; }
+      }
+      
+      .chart-card {
+        background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 20px; backdrop-filter: blur(10px); display: flex; flex-direction: column;
+      }
+      .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+      .chart-title { font-size: 16px; font-weight: 600; margin: 0; }
+      
+      /* Container com scroll para gráficos com muitos dados */
+      .chart-scroll-area {
+        position: relative;
+        width: 100%;
+        height: 380px;
+        overflow-y: auto; /* Permite rolagem vertical */
+        overflow-x: hidden;
+      }
+      /* O wrapper interno que terá altura dinâmica no JS */
+      .chart-wrap { position: relative; width: 100%; height: 100%; }
+
+      /* Painel de Análise Textual */
+      .analysis-card {
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid var(--accent);
+        border-radius: var(--radius);
+        padding: 24px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+        margin-bottom: 24px;
+      }
+      .analysis-card h3 {
+        margin: 0 0 16px 0; color: var(--accent); font-size: 18px;
+        display: flex; align-items: center; gap: 8px;
+      }
+      .analysis-card p {
+        margin: 0 0 12px 0; color: #cbd5e1; line-height: 1.6; font-size: 15px;
+      }
+      .analysis-card p strong { color: var(--text); }
+      .analysis-card p:last-child { margin: 0; }
+
+      .error { color: #fecaca; background: rgba(127, 29, 29, 0.4); border: 1px solid #7f1d1d; border-radius: 12px; padding: 16px; margin-top: 20px; }
+      
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+      ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div class="header-info">
+          <h1>Analytics Maricá</h1>
+          <p>Interesse dos visitantes pelas áreas naturais de Maricá</p>
+        </div>
+        <a class="btn" href="/">← Voltar ao site</a>
+      </header>
+
+      <div class="filters">
+        <div class="filter-group">
+          <label for="categoryFilter">Categoria:</label>
+          <select id="categoryFilter" class="select">
+            <option value="ALL">Todas as Categorias</option>
+            <option value="Histórico/Cultural">Histórico/Cultural</option>
+            <option value="Lagoas">Lagoas</option>
+            <option value="Natureza">Natureza</option>
+            <option value="Praias">Praias</option>
+            <option value="Praças">Praças</option>
+            <option value="Trilhas/Mirantes">Trilhas/Mirantes</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="topN">Exibir limite:</label>
+          <select id="topN" class="select">
+            <option value="10">Top 10</option>
+            <option value="20">Top 20</option>
+            <option value="50">Top 50</option>
+            <option value="100" selected>Top 100</option>
+            <option value="9999">Todas as Áreas</option>
+          </select>
+        </div>
+      </div>
+
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <span class="kpi-label">Total de Cliques</span>
+          <span class="kpi-value highlight" id="kpiClicks">0</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Total de Avaliações</span>
+          <span class="kpi-value" id="kpiRatings">0</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Média Geral</span>
+          <span class="kpi-value" id="kpiAvg" style="color: var(--success)">0.0</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Áreas Engajadas</span>
+          <span class="kpi-value" id="kpiPoints">0</span>
+        </div>
+      </section>
+
+      <!-- Painel de Insights em Texto -->
+      <section class="analysis-card" id="analysisText">
+        <h3>⚡ Insights Automáticos</h3>
+        <p>Analisando os dados do servidor...</p>
+      </section>
+
+      <section class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="chart-title">Ranking de Cliques</h2>
+          </div>
+          <div class="chart-scroll-area">
+            <div class="chart-wrap" id="clicksWrapper"><canvas id="clicksChart"></canvas></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="chart-title">Atenção por Categoria</h2>
+          </div>
+          <div class="chart-scroll-area">
+            <div class="chart-wrap"><canvas id="categoryChart"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="charts-grid-bottom">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="chart-title">Melhores Avaliações (Média)</h2>
+          </div>
+          <div class="chart-scroll-area">
+            <div class="chart-wrap" id="ratingsWrapper"><canvas id="ratingsChart"></canvas></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="chart-title">Matriz: Engajamento vs Qualidade</h2>
+          </div>
+          <div class="chart-scroll-area">
+            <div class="chart-wrap"><canvas id="scatterChart"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="error"></section>
+    </div>
+
+    <script>
+      const fmt = new Intl.NumberFormat("pt-BR");
+      const API_BASE = (() => {
+        const fromWindow = window.MARICA_API_BASE;
+        const fromStorage = localStorage.getItem("marica_api_base") || "";
+        const base = String(fromWindow || fromStorage || "").trim();
+        return base ? base.replace(/\/$/, "") : "";
+      })();
+
+      const categoryMap = {
+        'areas-protegidas': 'Áreas Protegidas',
+        'restauracao-ecologica': 'Restauração Ecológica',
+        'praias-e-restinga': 'Praias e Restinga',
+        'lagoas': 'Lagoas',
+        'mata-atlantica': 'Mata Atlântica',
+        'costoes-e-geologia': 'Costões e Geologia',
+        'educacao-ambiental': 'Educação Ambiental'
+      };
+
+      let globalData = [];
+      let charts = {};
+
+      function extractInfoFromId(id) {
+        for (const [prefix, catName] of Object.entries(categoryMap)) {
+          if (id.startsWith(prefix + '-')) {
+            const rawName = id.slice(prefix.length + 1);
+            const name = rawName.replaceAll("-", " ").replace(/\b\w/g, c => c.toUpperCase());
+            return { category: catName, name };
+          }
+        }
+        return { category: 'Outros', name: id.replaceAll("-", " ") };
+      }
+
+      function truncate(label, max = 35) {
+        return label && label.length > max ? `${label.slice(0, max - 1)}…` : label;
+      }
+
+      function updateKPIs(data) {
+        const totalClicks = data.reduce((acc, r) => acc + r.clicks, 0);
+        const totalRatings = data.reduce((acc, r) => acc + r.ratingCount, 0);
+        const totalSum = data.reduce((acc, r) => acc + r.ratingSum, 0);
+        const avg = totalRatings > 0 ? totalSum / totalRatings : 0;
+        const visited = data.filter(r => r.clicks > 0 || r.ratingCount > 0).length;
+
+        document.getElementById("kpiClicks").textContent = fmt.format(totalClicks);
+        document.getElementById("kpiRatings").textContent = fmt.format(totalRatings);
+        document.getElementById("kpiAvg").textContent = avg.toFixed(1);
+        document.getElementById("kpiPoints").textContent = visited;
+      }
+
+      function renderInsights(data) {
+        const container = document.getElementById("analysisText");
+        
+        if(data.length === 0) { 
+          container.innerHTML = `<h3>⚡ Insights Automáticos</h3><p>Nenhum dado encontrado para o filtro selecionado.</p>`; 
+          return; 
+        }
+
+        const totalClicks = data.reduce((acc, r) => acc + r.clicks, 0);
+        const topClicked = [...data].sort((a, b) => b.clicks - a.clicks)[0];
+        
+        // Pega o melhor avaliado (priorizando quem tem pelo menos 2 avaliações para ser justo)
+        const wellRated = [...data].filter(r => r.ratingCount >= 2).sort((a,b) => b.ratingAvg - a.ratingAvg)[0] || 
+                          [...data].filter(r => r.ratingCount > 0).sort((a,b) => b.ratingAvg - a.ratingAvg)[0];
+        
+        // Categoria com mais cliques
+        const catTotals = {};
+        data.forEach(r => { if(r.clicks > 0) catTotals[r.category] = (catTotals[r.category] || 0) + r.clicks; });
+        const topCat = Object.entries(catTotals).sort((a,b) => b[1] - a[1])[0];
+
+        const clickShare = totalClicks > 0 && topClicked.clicks > 0 ? ((topClicked.clicks / totalClicks) * 100).toFixed(1) : 0;
+
+        container.innerHTML = `
+          <h3>⚡ Insights Automáticos</h3>
+          <p><strong>Ponto de Maior Interesse:</strong> O local <strong>${topClicked.name}</strong> lidera as buscas com ${topClicked.clicks} acessos, representando ${clickShare}% da atenção total desse grupo.</p>
+          <p><strong>Destaque em Qualidade:</strong> ${wellRated ? `O ponto <strong>${wellRated.name}</strong> é o melhor avaliado pelos usuários, sustentando uma nota média de ${wellRated.ratingAvg.toFixed(1)}.` : 'Ainda não há avaliações suficientes para destacar um ponto por nota.'}</p>
+          <p><strong>Comportamento do Visitante:</strong> ${topCat ? `A categoria <strong>${topCat[0]}</strong> é o grande motor de interesse, acumulando um total de ${topCat[1]} interações no mapa.` : 'Nenhum clique registrado ainda.'}</p>
+        `;
+      }
+
+      function renderCharts(data) {
+        const topN = Number(document.getElementById("topN").value);
+        Object.values(charts).forEach(c => c.destroy());
+
+        Chart.defaults.color = '#cbd5e1';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+
+        // 1. Gráfico de Cliques (Barras Horizontais Dinâmicas)
+        const byClicks = [...data].sort((a, b) => b.clicks - a.clicks).slice(0, topN);
+        const clicksWrapper = document.getElementById("clicksWrapper");
+        // Ajusta a altura da div com base na quantidade de linhas (25px por linha, no mínimo 380px)
+        clicksWrapper.style.height = `${Math.max(380, byClicks.length * 25)}px`;
+
+        charts.clicks = new Chart(document.getElementById("clicksChart"), {
+          type: "bar",
+          data: {
+            labels: byClicks.map(r => truncate(r.name)),
+            datasets: [{
+              label: "Cliques",
+              data: byClicks.map(r => r.clicks),
+              backgroundColor: "rgba(56, 189, 248, 0.8)",
+              borderRadius: 4,
+              barPercentage: 0.8
+            }]
+          },
+          options: {
+            indexAxis: "y", responsive: true, maintainAspectRatio: false,
+            scales: {
+              x: { grid: { color: "rgba(148,163,184,0.1)" }, beginAtZero: true },
+              y: { grid: { display: false }, ticks: { autoSkip: false } }
+            },
+            plugins: { legend: { display: false } }
+          }
+        });
+
+        // 2. Gráfico de Categorias (Rosca)
+        const catTotals = data.reduce((acc, r) => {
+          if (r.clicks > 0) acc[r.category] = (acc[r.category] || 0) + r.clicks;
+          return acc;
+        }, {});
+        const catLabels = Object.keys(catTotals);
+        const catData = Object.values(catTotals);
+        const colors = ['#38bdf8', '#34d399', '#a78bfa', '#fbbf24', '#f43f5e', '#fb923c'];
+
+        charts.category = new Chart(document.getElementById("categoryChart"), {
+          type: "doughnut",
+          data: {
+            labels: catLabels,
+            datasets: [{ data: catData, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false, cutout: '65%',
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } } }
+          }
+        });
+
+        // 3. Gráfico de Avaliações (Barras Horizontais Dinâmicas)
+        const byRating = [...data]
+          .filter(r => r.ratingCount > 0)
+          .sort((a, b) => b.ratingAvg - a.ratingAvg || b.ratingCount - a.ratingCount)
+          .slice(0, topN);
+        const ratingsWrapper = document.getElementById("ratingsWrapper");
+        ratingsWrapper.style.height = `${Math.max(380, byRating.length * 25)}px`;
+
+        charts.ratings = new Chart(document.getElementById("ratingsChart"), {
+          type: "bar",
+          data: {
+            labels: byRating.map(r => truncate(r.name)),
+            datasets: [{
+              label: "Média",
+              data: byRating.map(r => r.ratingAvg),
+              backgroundColor: "rgba(52, 211, 153, 0.8)",
+              borderRadius: 4,
+              barPercentage: 0.8
+            }]
+          },
+          options: {
+            indexAxis: "y", responsive: true, maintainAspectRatio: false,
+            scales: {
+              x: { min: 0, max: 5, grid: { color: "rgba(148,163,184,0.1)" } },
+              y: { grid: { display: false }, ticks: { autoSkip: false } }
+            },
+            plugins: { legend: { display: false } }
+          }
+        });
+
+        // 4. Desempenho por Categoria (Ideal para dados esparsos/poucos cliques)
+        const categoriesCombo = [...new Set(data.map(d => d.category))];
+        const catStats = categoriesCombo.map(cat => {
+            const items = data.filter(d => d.category === cat);
+            const totalClicks = items.reduce((sum, item) => sum + item.clicks, 0);
+            
+            const ratedItems = items.filter(i => i.ratingCount > 0);
+            const avgNotes = ratedItems.length 
+              ? ratedItems.reduce((sum, item) => sum + item.ratingAvg, 0) / ratedItems.length 
+              : 0;
+            
+            return { cat, totalClicks, avgNotes };
+        }).filter(c => c.totalClicks > 0 || c.avgNotes > 0);
+
+        charts.scatter = new Chart(document.getElementById("scatterChart"), {
+            type: 'bar',
+            data: {
+                labels: catStats.map(c => {
+                    // Quebra nomes grandes em duas linhas para não faltar espaço horizontal
+                    if (c.cat === 'Histórico/Cultural') return ['Histórico', 'Cultural'];
+                    if (c.cat === 'Trilhas/Mirantes') return ['Trilhas', 'Mirantes'];
+                    return c.cat;
+                }),
+                datasets: [
+                    {
+                        type: 'line',
+                        label: 'Média de Notas',
+                        data: catStats.map(c => c.avgNotes),
+                        borderColor: '#34d399',
+                        backgroundColor: '#34d399',
+                        borderWidth: 3,
+                        tension: 0.4, 
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: '#0f172a', 
+                        yAxisID: 'y1'
+                    },
+                    {
+                        type: 'bar',
+                        label: 'Total de Cliques',
+                        data: catStats.map(c => c.totalClicks),
+                        backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                        borderColor: 'rgba(56, 189, 248, 0.8)',
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        yAxisID: 'y'
+                    }
+                ]
+            },
+            options: {
+                responsive: true, 
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    x: { 
+                      grid: { display: false },
+                      ticks: { 
+                        color: '#94a3b8',
+                        maxRotation: 0,  // Força o texto a ficar reto (0 graus)
+                        minRotation: 0,  // Força o texto a ficar reto
+                        autoSkip: false, // Garante que nenhuma categoria seja ocultada
+                        font: { size: 11 } // Diminui um tiquinho a fonte para encaixar perfeito
+                      }
+                    },
+                    y: { 
+                      type: 'linear', 
+                      display: true, 
+                      position: 'left', 
+                      title: { display: true, text: 'Total de Cliques', color: '#38bdf8' },
+                      grid: { color: "rgba(148,163,184,0.1)" },
+                      ticks: { color: '#94a3b8' }
+                    },
+                    y1: { 
+                      type: 'linear', 
+                      display: true, 
+                      position: 'right', 
+                      min: 0, 
+                      max: 5, 
+                      title: { display: true, text: 'Média de Notas', color: '#34d399' },
+                      grid: { drawOnChartArea: false }, 
+                      ticks: { color: '#94a3b8' }
+                    }
+                },
+                plugins: { 
+                  legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15, color: '#cbd5e1' } },
+                  tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        let label = context.dataset.label || '';
+                        if (label) label += ': ';
+                        if (context.dataset.yAxisID === 'y1') {
+                            label += context.parsed.y.toFixed(1) + ' estrelas';
+                        } else {
+                            label += context.parsed.y + ' cliques';
+                        }
+                        return label;
+                      }
+                    }
+                  }
+                }
+            }
+          });
+      }            
+      function processAndRender() {
+        const catFilter = document.getElementById("categoryFilter").value;
+        const filteredData = catFilter === "ALL" 
+          ? globalData 
+          : globalData.filter(d => d.category === catFilter);
+        
+        updateKPIs(filteredData);
+        renderInsights(filteredData);
+        renderCharts(filteredData);
+      }
+
+      async function initDashboard() {
+        try {
+          const res = await fetch(`${API_BASE}/api/stats`, { cache: "no-store" });
+          if (!res.ok) throw new Error(`Status ${res.status}`);
+          
+          const payload = await res.json();
+          const byId = payload && payload.byId ? payload.byId : {};
+
+          globalData = Object.entries(byId).map(([id, stats]) => {
+            const info = extractInfoFromId(id);
+            const clicks = Number(stats.clicks || 0);
+            const ratingCount = Number(stats.ratingCount || 0);
+            const ratingSum = Number(stats.ratingSum || 0);
+            return {
+              id,
+              name: info.name,
+              category: info.category,
+              clicks,
+              ratingCount,
+              ratingSum,
+              ratingAvg: ratingCount > 0 ? ratingSum / ratingCount : 0,
+            };
+          });
+
+          document.getElementById("categoryFilter").addEventListener("change", processAndRender);
+          document.getElementById("topN").addEventListener("change", processAndRender);
+
+          processAndRender();
+
+        } catch (err) {
+          document.getElementById("error").innerHTML =
+            `<div class="error">Falha ao carregar API: ${String(err.message || err)}</div>`;
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", initDashboard);
+    </script>
+  </body>
+</html>

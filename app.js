@@ -469,13 +469,22 @@ const IMAGE_MAP = {
   "morro-da-peca": "Morro-da-Peca-webp.webp",
   "farol-das-ilhas-maricas": "Farol.das.Ilhas.Marica.jpeg",
   "feira-livre-de-sao-bento-da-lagoa": "feiralivre.jpg",
-  // Ilustrações (SVG) para áreas ainda sem foto — troque pelo arquivo da foto quando tiver
-  "lagoa-de-guarapina": "Lagoa.de.Guarapina.svg",
-  "lagoa-do-padre": "Lagoa.do.Padre.svg",
-  "lagoa-de-jacone": "Lagoa.de.Jacone.svg",
+  // Fotos reais de licença livre (Wikimedia Commons) — créditos em IMAGE_CREDITS
+  "lagoa-de-guarapina": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Praia_de_Ponta_Negra_and_Lagoa_de_Guarapina_viewed_from_Farol_de_Ponta_Negra%2C_Maric%C3%A1%2C_Brazil.jpg/1920px-Praia_de_Ponta_Negra_and_Lagoa_de_Guarapina_viewed_from_Farol_de_Ponta_Negra%2C_Maric%C3%A1%2C_Brazil.jpg",
+  "lagoa-do-padre": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/Cordeirinho%2C_canal_de_Guarapina%2C_Marica.jpg/1920px-Cordeirinho%2C_canal_de_Guarapina%2C_Marica.jpg",
+  "lagoa-de-jacone": "https://upload.wikimedia.org/wikipedia/commons/7/76/Panomiojacone.jpg",
+  "beachrocks-de-jacone": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9b/Darwin_Beachrocks_at_Jacon%C3%A9_Beach_-_Rio_de_Janeiro%283%29.jpg/1920px-Darwin_Beachrocks_at_Jacon%C3%A9_Beach_-_Rio_de_Janeiro%283%29.jpg",
+  // Ilustrações (SVG) para áreas ainda sem foto de licença livre
   "ilha-cardosa": "Ilha.Cardosa.svg",
-  "ponta-do-fundao": "Ponta.do.Fundao.svg",
-  "beachrocks-de-jacone": "Beachrocks.Jacone.svg"
+  "ponta-do-fundao": "Ponta.do.Fundao.svg"
+};
+
+// Créditos das fotos de terceiros (exigidos pelas licenças Creative Commons)
+const IMAGE_CREDITS = {
+  "lagoa-de-guarapina": { author: "Wilfredor", license: "CC0", url: "https://commons.wikimedia.org/wiki/File:Praia_de_Ponta_Negra_and_Lagoa_de_Guarapina_viewed_from_Farol_de_Ponta_Negra,_Maric%C3%A1,_Brazil.jpg" },
+  "lagoa-do-padre": { author: "Sophydiah", license: "CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:Cordeirinho,_canal_de_Guarapina,_Marica.jpg" },
+  "lagoa-de-jacone": { author: "vinicius_sbs", license: "Domínio público", url: "https://commons.wikimedia.org/wiki/File:Panomiojacone.jpg" },
+  "beachrocks-de-jacone": { author: "Vitor Manoel Rodrigues do Nascimento", license: "CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:Darwin_Beachrocks_at_Jacon%C3%A9_Beach_-_Rio_de_Janeiro(3).jpg" }
 };
 
 function getCommentsForPlace(p) {
@@ -787,7 +796,8 @@ function getImageUrl(ponto) {
   const slug = slugify(ponto.nome);
   const filename = IMAGE_MAP[slug];
   
-  return filename ? `./imagens/${filename}` : '';
+  if (!filename) return '';
+  return /^https?:\/\//.test(filename) ? filename : `./imagens/${filename}`;
 }
 
 function parseDocTextToPoints(text) {
@@ -972,6 +982,7 @@ function renderCard(p, analyticsState, lang) {
     protToUse = p[`protecao_${lang}`] || protToUse;
   }
   const isIllustration = /\.svg$/i.test(img);
+  const credit = IMAGE_CREDITS[slugify(p.nome)];
 
   return `
     <div class="card-wrapper">
@@ -985,6 +996,7 @@ function renderCard(p, analyticsState, lang) {
         <div class="card__media">
           <img class="card__img" src="${escapeHtml(img)}" alt="${escapeHtml(p.nome)}" loading="lazy" decoding="async" />
           ${isIllustration ? `<span class="card__illustration">${escapeHtml(t("illustration", lang))}</span>` : ""}
+          ${credit ? `<a class="card__credit" href="${escapeHtml(credit.url)}" target="_blank" rel="noopener noreferrer" title="Wikimedia Commons">📷 ${escapeHtml(credit.author)} · ${escapeHtml(credit.license)}</a>` : ""}
           <div class="card__overlay">
             ${p.categoria ? `<span class="tag">${escapeHtml(tData(p.categoria, lang))}</span>` : ""}
             ${isProtected ? `<span class="tag tag--protected">🛡️ ${escapeHtml(t("protectedArea", lang))}</span>` : ""}
@@ -1079,7 +1091,7 @@ function wireCardEvents(points, lang) {
     if (!p) return;
 
     card.addEventListener("click", (e) => {
-      if(e.target.closest('.star-btn') || e.target.closest('.link') || e.target.closest('.card__close') || e.target.closest('.eco-btn') || e.target.closest('[data-comment-form]')) {
+      if(e.target.closest('.star-btn') || e.target.closest('.link') || e.target.closest('.card__close') || e.target.closest('.eco-btn') || e.target.closest('.card__credit') || e.target.closest('[data-comment-form]')) {
         return;
       }
       

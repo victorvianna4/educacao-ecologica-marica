@@ -3,544 +3,630 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Painel • Educação Ecológica em Maricá</title>
+    <title>Painel Ambiental • Educação Ecológica em Maricá</title>
+    <link rel="icon" href="/imagens/logo.jpg" type="image/jpeg" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
     <style>
       :root {
-        --bg: #0f172a;
-        --panel: rgba(30, 41, 59, 0.7);
-        --panel-hover: rgba(30, 41, 59, 0.9);
-        --line: rgba(148, 163, 184, 0.15);
-        --text: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-glow: rgba(56, 189, 248, 0.4);
-        --success: #34d399;
-        --warning: #fbbf24;
-        --radius: 16px;
+        --bg: #07130d;
+        --bg2: #0c1f15;
+        --panel: rgba(18, 42, 29, 0.72);
+        --panel-solid: #12261b;
+        --line: rgba(134, 239, 172, 0.14);
+        --text: #ecfdf3;
+        --muted: #9fbfad;
+        --leaf: #4ade80;
+        --leaf2: #22c55e;
+        --forest: #15803d;
+        --water: #38bdf8;
+        --sun: #fbbf24;
+        --earth: #d6a26b;
+        --coral: #fb7185;
+        --radius: 18px;
+        --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       }
       * { box-sizing: border-box; }
       body {
         margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background: linear-gradient(135deg, #020617, #0f172a, #1e1b4b);
+        font-family: var(--font);
         color: var(--text);
+        background:
+          radial-gradient(1200px 600px at 10% -10%, rgba(34, 197, 94, 0.18), transparent 60%),
+          radial-gradient(900px 500px at 110% 10%, rgba(56, 189, 248, 0.12), transparent 60%),
+          linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
         min-height: 100vh;
       }
-      .container { max-width: 1280px; margin: 0 auto; padding: 32px 20px; }
-      
-      /* Cabeçalho */
-      .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--line); padding-bottom: 24px; }
-      .header-info h1 { font-size: 28px; margin: 0 0 8px 0; font-weight: 800; letter-spacing: -0.5px; }
-      .header-info p { margin: 0; color: var(--muted); font-size: 15px; }
+      a { color: inherit; }
+      .container { width: min(1360px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 60px; }
+
+      .header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+      .brand { display: flex; align-items: center; gap: 14px; }
+      .brand__icon {
+        width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 26px;
+        background: linear-gradient(135deg, var(--forest), #065f46); box-shadow: 0 10px 30px rgba(21, 128, 61, 0.35);
+      }
+      .brand h1 { margin: 0; font-size: 26px; letter-spacing: -0.3px; }
+      .brand p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+      .actions { display: flex; gap: 10px; flex-wrap: wrap; }
       .btn {
-        color: var(--text); text-decoration: none; border: 1px solid var(--line);
-        padding: 10px 18px; border-radius: 10px; background: rgba(255, 255, 255, 0.05);
-        transition: all 0.2s ease; font-weight: 500; font-size: 14px;
+        display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 12px;
+        border: 1px solid var(--line); background: var(--panel); color: var(--text); text-decoration: none;
+        font-weight: 600; font-size: 14px; cursor: pointer; transition: border-color .2s, background .2s;
       }
-      .btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--muted); }
+      .btn:hover { border-color: var(--leaf); }
+      .btn--primary { background: var(--forest); border-color: var(--forest); }
+      .btn--primary:hover { background: var(--leaf2); }
 
-      /* Filtros */
-      .filters {
-        display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
-        background: var(--panel); padding: 16px; border-radius: var(--radius);
-        border: 1px solid var(--line); backdrop-filter: blur(10px);
-      }
-      .filter-group { display: flex; align-items: center; gap: 10px; }
-      .filter-group label { font-size: 14px; color: var(--muted); font-weight: 500; }
-      .select {
-        background: #0f172a; color: var(--text); border: 1px solid var(--line);
-        border-radius: 8px; padding: 8px 12px; outline: none; font-size: 14px;
-        transition: border-color 0.2s;
-      }
-      .select:focus { border-color: var(--accent); }
+      .filters { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; padding: 14px 16px; border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); backdrop-filter: blur(6px); }
+      .filter-group { display: flex; align-items: center; gap: 8px; }
+      .filter-group label { font-size: 13px; color: var(--muted); font-weight: 600; }
+      .select { background: var(--panel-solid); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-size: 14px; outline: none; }
+      .select:focus { border-color: var(--leaf); }
+      .updated { margin-left: auto; color: var(--muted); font-size: 12px; align-self: center; }
 
-      /* KPIs */
-      .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
-      .kpi-card {
-        background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
-        padding: 20px; display: flex; flex-direction: column; gap: 8px;
-        backdrop-filter: blur(10px); transition: transform 0.2s;
-      }
-      .kpi-card:hover { transform: translateY(-2px); background: var(--panel-hover); }
-      .kpi-label { color: var(--muted); font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-      .kpi-value { font-size: 32px; font-weight: 800; color: var(--text); }
-      .kpi-value.highlight { color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); }
+      .kpi-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; margin-bottom: 20px; }
+      .kpi { padding: 16px; border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); position: relative; overflow: hidden; }
+      .kpi::after { content: ""; position: absolute; inset: auto -20px -30px auto; width: 90px; height: 90px; border-radius: 50%; background: var(--accent, var(--leaf)); opacity: .08; }
+      .kpi__icon { font-size: 20px; }
+      .kpi__label { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+      .kpi__value { display: block; font-size: 28px; font-weight: 800; margin-top: 4px; color: var(--accent, var(--text)); }
+      .kpi__sub { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-      /* Grid de Gráficos */
-      .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
-      .charts-grid-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;}
-      @media (max-width: 992px) {
-        .charts-grid, .charts-grid-bottom { grid-template-columns: 1fr; }
-      }
-      
-      .chart-card {
-        background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
-        padding: 20px; backdrop-filter: blur(10px); display: flex; flex-direction: column;
-      }
-      .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-      .chart-title { font-size: 16px; font-weight: 600; margin: 0; }
-      
-      /* Container com scroll para gráficos com muitos dados */
-      .chart-scroll-area {
-        position: relative;
-        width: 100%;
-        height: 380px;
-        overflow-y: auto; /* Permite rolagem vertical */
-        overflow-x: hidden;
-      }
-      /* O wrapper interno que terá altura dinâmica no JS */
-      .chart-wrap { position: relative; width: 100%; height: 100%; }
+      .insights { padding: 20px 22px; border-radius: var(--radius); background: linear-gradient(135deg, rgba(21, 128, 61, 0.28), rgba(6, 95, 70, 0.18)); border: 1px solid rgba(74, 222, 128, 0.3); margin-bottom: 20px; }
+      .insights h3 { margin: 0 0 12px; font-size: 17px; color: var(--leaf); }
+      .insights ul { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; }
+      .insights li { color: #d1fae5; line-height: 1.5; font-size: 14.5px; }
+      .insights strong { color: #fff; }
 
-      /* Painel de Análise Textual */
-      .analysis-card {
-        background: rgba(15, 23, 42, 0.8);
-        border: 1px solid var(--accent);
-        border-radius: var(--radius);
-        padding: 24px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
-        margin-bottom: 24px;
-      }
-      .analysis-card h3 {
-        margin: 0 0 16px 0; color: var(--accent); font-size: 18px;
-        display: flex; align-items: center; gap: 8px;
-      }
-      .analysis-card p {
-        margin: 0 0 12px 0; color: #cbd5e1; line-height: 1.6; font-size: 15px;
-      }
-      .analysis-card p strong { color: var(--text); }
-      .analysis-card p:last-child { margin: 0; }
+      .grid { display: grid; gap: 16px; margin-bottom: 16px; }
+      .grid--2 { grid-template-columns: 1.6fr 1fr; }
+      .grid--2b { grid-template-columns: 1fr 1fr; }
+      .grid--3 { grid-template-columns: 1fr 1fr 1fr; }
+      .card { padding: 18px; border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); min-width: 0; }
+      .card h2 { margin: 0 0 4px; font-size: 16px; }
+      .card .hint { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+      .chart { position: relative; height: 300px; }
+      .chart--tall { height: 440px; }
+
+      .comments { display: flex; flex-direction: column; gap: 10px; max-height: 440px; overflow: auto; padding-right: 4px; }
+      .comment { display: flex; gap: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.03); border: 1px solid var(--line); }
+      .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--forest); display: grid; place-items: center; font-weight: 800; flex-shrink: 0; }
+      .comment__head { font-size: 13px; font-weight: 700; }
+      .comment__head span { color: var(--muted); font-weight: 500; }
+      .comment__place { font-size: 12px; color: var(--leaf); font-weight: 600; }
+      .comment__text { font-size: 13.5px; color: #d1e7da; line-height: 1.45; margin-top: 2px; }
+      .stars { color: var(--sun); letter-spacing: 1px; font-size: 12px; }
+
+      table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+      th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+      th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; cursor: pointer; user-select: none; position: sticky; top: 0; background: var(--panel-solid); }
+      th[data-sort]:hover { color: var(--leaf); }
+      td.num, th.num { text-align: right; }
+      .table-wrap { max-height: 520px; overflow: auto; }
+      .pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: rgba(74, 222, 128, 0.14); color: var(--leaf); }
+      .pill--cat { background: rgba(56, 189, 248, 0.12); color: #7dd3fc; }
 
       .error { color: #fecaca; background: rgba(127, 29, 29, 0.4); border: 1px solid #7f1d1d; border-radius: 12px; padding: 16px; margin-top: 20px; }
-      
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar { width: 8px; }
-      ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
-      ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 4px; }
-      ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+      .footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 26px; }
+
+      @media (max-width: 1100px) {
+        .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid--2, .grid--2b, .grid--3 { grid-template-columns: 1fr; }
+        .insights ul { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 560px) {
+        .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .kpi__value { font-size: 22px; }
+        .brand h1 { font-size: 20px; }
+        .updated { margin-left: 0; }
+      }
+      ::-webkit-scrollbar { width: 8px; height: 8px; }
+      ::-webkit-scrollbar-thumb { background: rgba(134, 239, 172, 0.25); border-radius: 4px; }
     </style>
   </head>
   <body>
     <div class="container">
       <header class="header">
-        <div class="header-info">
-          <h1>Analytics Maricá</h1>
-          <p>Interesse dos visitantes pelas áreas naturais de Maricá</p>
+        <div class="brand">
+          <div class="brand__icon" aria-hidden="true">🌿</div>
+          <div>
+            <h1>Painel Ambiental</h1>
+            <p>Educação Ecológica em Maricá • engajamento dos visitantes com as áreas naturais</p>
+          </div>
         </div>
-        <a class="btn" href="/">← Voltar ao site</a>
+        <div class="actions">
+          <button class="btn" id="refreshBtn" type="button">↻ Atualizar</button>
+          <a class="btn btn--primary" href="/">← Voltar ao site</a>
+        </div>
       </header>
 
       <div class="filters">
         <div class="filter-group">
-          <label for="categoryFilter">Categoria:</label>
-          <select id="categoryFilter" class="select">
-            <option value="ALL">Todas as Categorias</option>
-            <option value="Histórico/Cultural">Histórico/Cultural</option>
-            <option value="Lagoas">Lagoas</option>
-            <option value="Natureza">Natureza</option>
-            <option value="Praias">Praias</option>
-            <option value="Praças">Praças</option>
-            <option value="Trilhas/Mirantes">Trilhas/Mirantes</option>
+          <label for="categoryFilter">Categoria</label>
+          <select id="categoryFilter" class="select"><option value="ALL">Todas as categorias</option></select>
+        </div>
+        <div class="filter-group">
+          <label for="periodFilter">Período</label>
+          <select id="periodFilter" class="select">
+            <option value="7">Últimos 7 dias</option>
+            <option value="30" selected>Últimos 30 dias</option>
+            <option value="60">Últimos 60 dias</option>
+            <option value="9999">Todo o histórico</option>
           </select>
         </div>
         <div class="filter-group">
-          <label for="topN">Exibir limite:</label>
+          <label for="topN">Ranking</label>
           <select id="topN" class="select">
-            <option value="10">Top 10</option>
-            <option value="20">Top 20</option>
-            <option value="50">Top 50</option>
-            <option value="100" selected>Top 100</option>
-            <option value="9999">Todas as Áreas</option>
+            <option value="10" selected>Top 10</option>
+            <option value="15">Top 15</option>
+            <option value="25">Top 25</option>
+            <option value="9999">Todas</option>
           </select>
         </div>
+        <span class="updated" id="updatedAt">Carregando…</span>
       </div>
 
-      <section class="kpi-grid">
-        <div class="kpi-card">
-          <span class="kpi-label">Total de Cliques</span>
-          <span class="kpi-value highlight" id="kpiClicks">0</span>
+      <section class="kpi-grid" aria-label="Indicadores">
+        <div class="kpi" style="--accent: var(--water)"><span class="kpi__icon">🗺️</span><span class="kpi__label">Cliques no mapa</span><span class="kpi__value" id="kpiClicks">0</span><span class="kpi__sub" id="kpiClicksSub">&nbsp;</span></div>
+        <div class="kpi" style="--accent: var(--sun)"><span class="kpi__icon">⭐</span><span class="kpi__label">Avaliações</span><span class="kpi__value" id="kpiRatings">0</span><span class="kpi__sub" id="kpiAvg">média —</span></div>
+        <div class="kpi" style="--accent: var(--leaf)"><span class="kpi__icon">💚</span><span class="kpi__label">Curtidas</span><span class="kpi__value" id="kpiLikes">0</span><span class="kpi__sub" id="kpiLikesSub">&nbsp;</span></div>
+        <div class="kpi" style="--accent: var(--earth)"><span class="kpi__icon">🧭</span><span class="kpi__label">Querem visitar</span><span class="kpi__value" id="kpiVisits">0</span><span class="kpi__sub" id="kpiVisitsSub">&nbsp;</span></div>
+        <div class="kpi" style="--accent: #a78bfa"><span class="kpi__icon">💬</span><span class="kpi__label">Comentários</span><span class="kpi__value" id="kpiComments">0</span><span class="kpi__sub" id="kpiCommentsSub">&nbsp;</span></div>
+        <div class="kpi" style="--accent: var(--leaf2)"><span class="kpi__icon">🤝</span><span class="kpi__label">Compromissos</span><span class="kpi__value" id="kpiPledges">0</span><span class="kpi__sub" id="kpiPledgesSub">&nbsp;</span></div>
+      </section>
+
+      <section class="insights" id="insights">
+        <h3>🌱 Leituras automáticas</h3>
+        <ul><li>Analisando os dados…</li></ul>
+      </section>
+
+      <section class="grid grid--2">
+        <div class="card">
+          <h2>Evolução das interações</h2>
+          <p class="hint">Cliques, curtidas, intenções de visita, comentários e compromissos por dia.</p>
+          <div class="chart"><canvas id="timelineChart"></canvas></div>
         </div>
-        <div class="kpi-card">
-          <span class="kpi-label">Total de Avaliações</span>
-          <span class="kpi-value" id="kpiRatings">0</span>
-        </div>
-        <div class="kpi-card">
-          <span class="kpi-label">Média Geral</span>
-          <span class="kpi-value" id="kpiAvg" style="color: var(--success)">0.0</span>
-        </div>
-        <div class="kpi-card">
-          <span class="kpi-label">Áreas Engajadas</span>
-          <span class="kpi-value" id="kpiPoints">0</span>
+        <div class="card">
+          <h2>Interesse por ecossistema</h2>
+          <p class="hint">Engajamento total por categoria ambiental.</p>
+          <div class="chart"><canvas id="categoryChart"></canvas></div>
         </div>
       </section>
 
-      <!-- Painel de Insights em Texto -->
-      <section class="analysis-card" id="analysisText">
-        <h3>⚡ Insights Automáticos</h3>
-        <p>Analisando os dados do servidor...</p>
-      </section>
-
-      <section class="charts-grid">
-        <div class="chart-card">
-          <div class="chart-header">
-            <h2 class="chart-title">Ranking de Cliques</h2>
-          </div>
-          <div class="chart-scroll-area">
-            <div class="chart-wrap" id="clicksWrapper"><canvas id="clicksChart"></canvas></div>
-          </div>
+      <section class="grid grid--2b">
+        <div class="card">
+          <h2>Áreas mais engajadas</h2>
+          <p class="hint">Cliques no mapa, curtidas e intenções de visita.</p>
+          <div class="chart chart--tall" id="rankWrap"><canvas id="rankChart"></canvas></div>
         </div>
-        <div class="chart-card">
-          <div class="chart-header">
-            <h2 class="chart-title">Atenção por Categoria</h2>
-          </div>
-          <div class="chart-scroll-area">
-            <div class="chart-wrap"><canvas id="categoryChart"></canvas></div>
-          </div>
+        <div class="card">
+          <h2>Melhor avaliadas pelos visitantes</h2>
+          <p class="hint">Média de estrelas (mínimo de 5 avaliações).</p>
+          <div class="chart chart--tall" id="ratingWrap"><canvas id="ratingChart"></canvas></div>
         </div>
       </section>
 
-      <section class="charts-grid-bottom">
-        <div class="chart-card">
-          <div class="chart-header">
-            <h2 class="chart-title">Melhores Avaliações (Média)</h2>
-          </div>
-          <div class="chart-scroll-area">
-            <div class="chart-wrap" id="ratingsWrapper"><canvas id="ratingsChart"></canvas></div>
+      <section class="grid grid--3">
+        <div class="card">
+          <h2>Áreas protegidas x demais</h2>
+          <p class="hint">Quanto do interesse está em unidades de conservação e geossítios.</p>
+          <div class="chart"><canvas id="protectedChart"></canvas></div>
+        </div>
+        <div class="card" style="grid-column: span 2">
+          <h2>Compromisso do visitante consciente</h2>
+          <p class="hint">Quantas vezes cada compromisso ambiental foi assumido no site.</p>
+          <div class="chart"><canvas id="pledgeChart"></canvas></div>
+        </div>
+      </section>
+
+      <section class="grid grid--2">
+        <div class="card">
+          <h2>Todas as áreas</h2>
+          <p class="hint">Clique no título de uma coluna para ordenar.</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-sort="name">Área</th>
+                  <th data-sort="category">Categoria</th>
+                  <th class="num" data-sort="clicks">Cliques</th>
+                  <th class="num" data-sort="likes">Curtidas</th>
+                  <th class="num" data-sort="visits">Visitar</th>
+                  <th class="num" data-sort="comments">Coment.</th>
+                  <th class="num" data-sort="ratingAvg">Nota</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
           </div>
         </div>
-        <div class="chart-card">
-          <div class="chart-header">
-            <h2 class="chart-title">Matriz: Engajamento vs Qualidade</h2>
-          </div>
-          <div class="chart-scroll-area">
-            <div class="chart-wrap"><canvas id="scatterChart"></canvas></div>
-          </div>
+        <div class="card">
+          <h2>Comentários recentes</h2>
+          <p class="hint">O que os visitantes estão dizendo.</p>
+          <div class="comments" id="recentComments"></div>
         </div>
       </section>
 
       <section id="error"></section>
+      <p class="footer">Dados armazenados no Vercel KV • Educação Ecológica em Maricá 🌎</p>
     </div>
 
     <script>
       const fmt = new Intl.NumberFormat("pt-BR");
       const API_BASE = (() => {
-        const fromWindow = window.MARICA_API_BASE;
-        const fromStorage = localStorage.getItem("marica_api_base") || "";
-        const base = String(fromWindow || fromStorage || "").trim();
+        let fromStorage = "";
+        try { fromStorage = localStorage.getItem("marica_api_base") || ""; } catch {}
+        const base = String(window.MARICA_API_BASE || fromStorage || "").trim();
         return base ? base.replace(/\/$/, "") : "";
       })();
 
-      const categoryMap = {
-        'areas-protegidas': 'Áreas Protegidas',
-        'restauracao-ecologica': 'Restauração Ecológica',
-        'praias-e-restinga': 'Praias e Restinga',
-        'lagoas': 'Lagoas',
-        'mata-atlantica': 'Mata Atlântica',
-        'costoes-e-geologia': 'Costões e Geologia',
-        'educacao-ambiental': 'Educação Ambiental'
+      const CATEGORY_LABELS = {
+        "areas-protegidas": "Áreas Protegidas",
+        "restauracao-ecologica": "Restauração Ecológica",
+        "praias-e-restinga": "Praias e Restinga",
+        "lagoas": "Lagoas",
+        "mata-atlantica": "Mata Atlântica",
+        "costoes-e-geologia": "Costões e Geologia",
+        "educacao-ambiental": "Educação Ambiental",
       };
+      const CATEGORY_COLORS = {
+        "Áreas Protegidas": "#22c55e",
+        "Restauração Ecológica": "#84cc16",
+        "Praias e Restinga": "#fbbf24",
+        "Lagoas": "#38bdf8",
+        "Mata Atlântica": "#15803d",
+        "Costões e Geologia": "#d6a26b",
+        "Educação Ambiental": "#a78bfa",
+        "Outros": "#64748b",
+      };
+      const PLEDGE_LABELS = [
+        "🗑️ Levar o lixo de volta",
+        "🌱 Usar só trilhas e acessos marcados",
+        "🐦 Não alimentar nem retirar animais",
+        "🔥 Não fazer fogueiras nem soltar balões",
+        "💧 Não poluir rios, lagoas e mar",
+        "🔇 Manter o som baixo",
+      ];
 
-      let globalData = [];
+      let rows = [];
+      let history = { daily: {}, pledges: {}, pledgeCompletions: 0, recentComments: [], meta: {} };
       let charts = {};
+      let sortKey = "clicks";
+      let sortDir = -1;
 
-      function extractInfoFromId(id) {
-        for (const [prefix, catName] of Object.entries(categoryMap)) {
-          if (id.startsWith(prefix + '-')) {
-            const rawName = id.slice(prefix.length + 1);
-            const name = rawName.replaceAll("-", " ").replace(/\b\w/g, c => c.toUpperCase());
-            return { category: catName, name };
+      const escapeHtml = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
+      const truncate = (s, n = 30) => (s && s.length > n ? s.slice(0, n - 1) + "…" : s);
+
+      function infoFromId(id) {
+        const m = history.meta[id];
+        if (m && m.nome) return { name: m.nome, category: m.categoria || "Outros", protegida: !!m.protegida };
+        for (const [prefix, cat] of Object.entries(CATEGORY_LABELS)) {
+          if (id.startsWith(prefix + "-")) {
+            const name = id.slice(prefix.length + 1).replaceAll("-", " ").replace(/\b\w/g, (c) => c.toUpperCase());
+            return { name, category: cat, protegida: prefix === "areas-protegidas" };
           }
         }
-        return { category: 'Outros', name: id.replaceAll("-", " ") };
+        return { name: id.replaceAll("-", " "), category: "Outros", protegida: false };
       }
 
-      function truncate(label, max = 35) {
-        return label && label.length > max ? `${label.slice(0, max - 1)}…` : label;
+      async function apiGet(path) {
+        const res = await fetch(`${API_BASE}${path}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`${path} respondeu ${res.status}`);
+        return res.json();
       }
 
-      function updateKPIs(data) {
-        const totalClicks = data.reduce((acc, r) => acc + r.clicks, 0);
-        const totalRatings = data.reduce((acc, r) => acc + r.ratingCount, 0);
-        const totalSum = data.reduce((acc, r) => acc + r.ratingSum, 0);
-        const avg = totalRatings > 0 ? totalSum / totalRatings : 0;
-        const visited = data.filter(r => r.clicks > 0 || r.ratingCount > 0).length;
-
-        document.getElementById("kpiClicks").textContent = fmt.format(totalClicks);
-        document.getElementById("kpiRatings").textContent = fmt.format(totalRatings);
-        document.getElementById("kpiAvg").textContent = avg.toFixed(1);
-        document.getElementById("kpiPoints").textContent = visited;
+      function dateKeys(days) {
+        const allDates = new Set();
+        Object.values(history.daily || {}).forEach((byDate) => Object.keys(byDate || {}).forEach((d) => allDates.add(d)));
+        const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
+        allDates.add(today);
+        const sorted = [...allDates].sort();
+        const first = sorted[0];
+        const end = new Date(today + "T12:00:00");
+        let start = new Date(first + "T12:00:00");
+        if (days < 9999) {
+          const s = new Date(end); s.setDate(s.getDate() - (days - 1));
+          start = s;
+        }
+        const out = [];
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) out.push(d.toISOString().slice(0, 10));
+        return out;
       }
+
+      function sumRange(field, keys) {
+        const byDate = history.daily[field] || {};
+        return keys.reduce((a, k) => a + (byDate[k] || 0), 0);
+      }
+
+      function filtered() {
+        const cat = document.getElementById("categoryFilter").value;
+        return cat === "ALL" ? rows : rows.filter((r) => r.category === cat);
+      }
+
+      function setText(id, v) { document.getElementById(id).textContent = v; }
+
+      function renderKPIs(data) {
+        const tot = (f) => data.reduce((a, r) => a + r[f], 0);
+        const clicks = tot("clicks"), ratings = tot("ratingCount"), sum = tot("ratingSum");
+        const likes = tot("likes"), visits = tot("visits"), comments = tot("comments");
+        const pledges = Object.values(history.pledges || {}).reduce((a, b) => a + b, 0);
+
+        const days = Number(document.getElementById("periodFilter").value);
+        const keys = dateKeys(Math.min(days, 9999));
+        const per = (f) => sumRange(f, keys);
+        const label = days >= 9999 ? "no histórico" : `nos últimos ${days} dias`;
+
+        setText("kpiClicks", fmt.format(clicks));
+        setText("kpiClicksSub", `+${fmt.format(per("clicks"))} ${label}`);
+        setText("kpiRatings", fmt.format(ratings));
+        setText("kpiAvg", ratings ? `média ${(sum / ratings).toFixed(1)} ★` : "média —");
+        setText("kpiLikes", fmt.format(likes));
+        setText("kpiLikesSub", `+${fmt.format(per("likes"))} ${label}`);
+        setText("kpiVisits", fmt.format(visits));
+        setText("kpiVisitsSub", `+${fmt.format(per("visits"))} ${label}`);
+        setText("kpiComments", fmt.format(comments));
+        setText("kpiCommentsSub", `+${fmt.format(per("comments"))} ${label}`);
+        setText("kpiPledges", fmt.format(pledges));
+        setText("kpiPledgesSub", `${fmt.format(history.pledgeCompletions || 0)} pessoas assumiram todos`);
+      }
+
+      function engagement(r) { return r.clicks + r.likes + r.visits * 2 + r.comments * 3 + r.ratingCount; }
 
       function renderInsights(data) {
-        const container = document.getElementById("analysisText");
-        
-        if(data.length === 0) { 
-          container.innerHTML = `<h3>⚡ Insights Automáticos</h3><p>Nenhum dado encontrado para o filtro selecionado.</p>`; 
-          return; 
-        }
+        const box = document.querySelector("#insights ul");
+        if (!data.length) { box.innerHTML = "<li>Nenhum dado para o filtro selecionado.</li>"; return; }
+        const topEng = [...data].sort((a, b) => engagement(b) - engagement(a))[0];
+        const best = [...data].filter((r) => r.ratingCount >= 5).sort((a, b) => b.ratingAvg - a.ratingAvg)[0];
+        const wish = [...data].sort((a, b) => b.visits - a.visits)[0];
 
-        const totalClicks = data.reduce((acc, r) => acc + r.clicks, 0);
-        const topClicked = [...data].sort((a, b) => b.clicks - a.clicks)[0];
-        
-        // Pega o melhor avaliado (priorizando quem tem pelo menos 2 avaliações para ser justo)
-        const wellRated = [...data].filter(r => r.ratingCount >= 2).sort((a,b) => b.ratingAvg - a.ratingAvg)[0] || 
-                          [...data].filter(r => r.ratingCount > 0).sort((a,b) => b.ratingAvg - a.ratingAvg)[0];
-        
-        // Categoria com mais cliques
         const catTotals = {};
-        data.forEach(r => { if(r.clicks > 0) catTotals[r.category] = (catTotals[r.category] || 0) + r.clicks; });
-        const topCat = Object.entries(catTotals).sort((a,b) => b[1] - a[1])[0];
+        data.forEach((r) => (catTotals[r.category] = (catTotals[r.category] || 0) + engagement(r)));
+        const topCat = Object.entries(catTotals).sort((a, b) => b[1] - a[1])[0];
 
-        const clickShare = totalClicks > 0 && topClicked.clicks > 0 ? ((topClicked.clicks / totalClicks) * 100).toFixed(1) : 0;
+        const totalEng = data.reduce((a, r) => a + engagement(r), 0) || 1;
+        const protEng = data.filter((r) => r.protegida).reduce((a, r) => a + engagement(r), 0);
+        const protShare = ((protEng / totalEng) * 100).toFixed(0);
 
-        container.innerHTML = `
-          <h3>⚡ Insights Automáticos</h3>
-          <p><strong>Ponto de Maior Interesse:</strong> O local <strong>${topClicked.name}</strong> lidera as buscas com ${topClicked.clicks} acessos, representando ${clickShare}% da atenção total desse grupo.</p>
-          <p><strong>Destaque em Qualidade:</strong> ${wellRated ? `O ponto <strong>${wellRated.name}</strong> é o melhor avaliado pelos usuários, sustentando uma nota média de ${wellRated.ratingAvg.toFixed(1)}.` : 'Ainda não há avaliações suficientes para destacar um ponto por nota.'}</p>
-          <p><strong>Comportamento do Visitante:</strong> ${topCat ? `A categoria <strong>${topCat[0]}</strong> é o grande motor de interesse, acumulando um total de ${topCat[1]} interações no mapa.` : 'Nenhum clique registrado ainda.'}</p>
-        `;
+        // compara os 7 dias completos mais recentes (sem hoje) com os 7 anteriores
+        const k15 = dateKeys(15), k7 = k15.slice(7, 14), k14 = k15.slice(0, 7);
+        const sumAll = (keys) => ["clicks", "likes", "visits", "comments", "ratings"].reduce((a, f) => a + sumRange(f, keys), 0);
+        const now7 = sumAll(k7), prev7 = sumAll(k14);
+        const growth = prev7 ? (((now7 - prev7) / prev7) * 100).toFixed(0) : null;
+
+        const pledges = history.pledges || {};
+        const trashPledge = pledges["0"] || 0;
+
+        box.innerHTML = [
+          `<li>🏆 <strong>${escapeHtml(topEng.name)}</strong> é a área que mais engaja visitantes, com ${fmt.format(topEng.clicks)} cliques e ${fmt.format(topEng.likes)} curtidas.</li>`,
+          best ? `<li>⭐ <strong>${escapeHtml(best.name)}</strong> é a mais bem avaliada: nota ${best.ratingAvg.toFixed(1)} em ${best.ratingCount} avaliações.</li>` : `<li>⭐ Ainda não há avaliações suficientes para destacar uma área.</li>`,
+          topCat ? `<li>🌍 O ecossistema que mais desperta interesse é <strong>${escapeHtml(topCat[0])}</strong> (${((topCat[1] / totalEng) * 100).toFixed(0)}% do engajamento).</li>` : "",
+          `<li>🛡️ <strong>${protShare}%</strong> do interesse está em áreas protegidas ou geossítios — ótimo momento para reforçar as regras de visitação.</li>`,
+          wish && wish.visits ? `<li>🧭 <strong>${fmt.format(wish.visits)}</strong> pessoas planejam visitar <strong>${escapeHtml(wish.name)}</strong>: vale reforçar a sinalização de descarte de lixo por lá.</li>` : "",
+          `<li>🗑️ <strong>${fmt.format(trashPledge)}</strong> visitantes se comprometeram a levar o lixo de volta${growth !== null ? `; as interações ${growth >= 0 ? "cresceram" : "caíram"} <strong>${Math.abs(growth)}%</strong> na última semana` : ""}.</li>`,
+        ].join("");
       }
 
-      function renderCharts(data) {
-        const topN = Number(document.getElementById("topN").value);
-        Object.values(charts).forEach(c => c.destroy());
+      const baseOpts = () => ({
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: "#cfe9da", boxWidth: 12, padding: 14 } }, tooltip: { backgroundColor: "#0c1f15", borderColor: "rgba(74,222,128,.4)", borderWidth: 1 } },
+      });
+      const gridColor = "rgba(134,239,172,0.08)";
+      const tickColor = "#9fbfad";
 
-        Chart.defaults.color = '#cbd5e1';
-        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      function destroy(name) { if (charts[name]) { charts[name].destroy(); delete charts[name]; } }
 
-        // 1. Gráfico de Cliques (Barras Horizontais Dinâmicas)
-        const byClicks = [...data].sort((a, b) => b.clicks - a.clicks).slice(0, topN);
-        const clicksWrapper = document.getElementById("clicksWrapper");
-        // Ajusta a altura da div com base na quantidade de linhas (25px por linha, no mínimo 380px)
-        clicksWrapper.style.height = `${Math.max(380, byClicks.length * 25)}px`;
-
-        charts.clicks = new Chart(document.getElementById("clicksChart"), {
-          type: "bar",
+      function renderTimeline() {
+        destroy("timeline");
+        const days = Number(document.getElementById("periodFilter").value);
+        const keys = dateKeys(days);
+        const labels = keys.map((k) => { const [y, m, d] = k.split("-"); return `${d}/${m}`; });
+        const series = [
+          ["clicks", "Cliques no mapa", "#38bdf8"],
+          ["likes", "Curtidas", "#4ade80"],
+          ["visits", "Querem visitar", "#d6a26b"],
+          ["comments", "Comentários", "#a78bfa"],
+          ["pledges", "Compromissos", "#fbbf24"],
+        ];
+        charts.timeline = new Chart(document.getElementById("timelineChart"), {
+          type: "line",
           data: {
-            labels: byClicks.map(r => truncate(r.name)),
-            datasets: [{
-              label: "Cliques",
-              data: byClicks.map(r => r.clicks),
-              backgroundColor: "rgba(56, 189, 248, 0.8)",
-              borderRadius: 4,
-              barPercentage: 0.8
-            }]
+            labels,
+            datasets: series.map(([f, label, color]) => ({
+              label, borderColor: color, backgroundColor: color + "22",
+              data: keys.map((k) => (history.daily[f] || {})[k] || 0),
+              tension: 0.35, pointRadius: keys.length > 40 ? 0 : 2, borderWidth: 2, fill: f === "clicks",
+            })),
           },
           options: {
-            indexAxis: "y", responsive: true, maintainAspectRatio: false,
+            ...baseOpts(),
+            interaction: { mode: "index", intersect: false },
             scales: {
-              x: { grid: { color: "rgba(148,163,184,0.1)" }, beginAtZero: true },
-              y: { grid: { display: false }, ticks: { autoSkip: false } }
+              x: { grid: { color: gridColor }, ticks: { color: tickColor, maxTicksLimit: 12 } },
+              y: { grid: { color: gridColor }, ticks: { color: tickColor }, beginAtZero: true },
             },
-            plugins: { legend: { display: false } }
-          }
+          },
         });
+      }
 
-        // 2. Gráfico de Categorias (Rosca)
-        const catTotals = data.reduce((acc, r) => {
-          if (r.clicks > 0) acc[r.category] = (acc[r.category] || 0) + r.clicks;
-          return acc;
-        }, {});
-        const catLabels = Object.keys(catTotals);
-        const catData = Object.values(catTotals);
-        const colors = ['#38bdf8', '#34d399', '#a78bfa', '#fbbf24', '#f43f5e', '#fb923c'];
-
+      function renderCategory(data) {
+        destroy("category");
+        const totals = {};
+        data.forEach((r) => (totals[r.category] = (totals[r.category] || 0) + engagement(r)));
+        const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]);
         charts.category = new Chart(document.getElementById("categoryChart"), {
           type: "doughnut",
           data: {
-            labels: catLabels,
-            datasets: [{ data: catData, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }]
+            labels: entries.map((e) => e[0]),
+            datasets: [{ data: entries.map((e) => e[1]), backgroundColor: entries.map((e) => CATEGORY_COLORS[e[0]] || "#64748b"), borderColor: "#0c1f15", borderWidth: 3, hoverOffset: 6 }],
           },
-          options: {
-            responsive: true, maintainAspectRatio: false, cutout: '65%',
-            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } } }
-          }
+          options: { ...baseOpts(), cutout: "62%", plugins: { ...baseOpts().plugins, legend: { position: "bottom", labels: { color: "#cfe9da", boxWidth: 12, padding: 10 } } } },
         });
-
-        // 3. Gráfico de Avaliações (Barras Horizontais Dinâmicas)
-        const byRating = [...data]
-          .filter(r => r.ratingCount > 0)
-          .sort((a, b) => b.ratingAvg - a.ratingAvg || b.ratingCount - a.ratingCount)
-          .slice(0, topN);
-        const ratingsWrapper = document.getElementById("ratingsWrapper");
-        ratingsWrapper.style.height = `${Math.max(380, byRating.length * 25)}px`;
-
-        charts.ratings = new Chart(document.getElementById("ratingsChart"), {
-          type: "bar",
-          data: {
-            labels: byRating.map(r => truncate(r.name)),
-            datasets: [{
-              label: "Média",
-              data: byRating.map(r => r.ratingAvg),
-              backgroundColor: "rgba(52, 211, 153, 0.8)",
-              borderRadius: 4,
-              barPercentage: 0.8
-            }]
-          },
-          options: {
-            indexAxis: "y", responsive: true, maintainAspectRatio: false,
-            scales: {
-              x: { min: 0, max: 5, grid: { color: "rgba(148,163,184,0.1)" } },
-              y: { grid: { display: false }, ticks: { autoSkip: false } }
-            },
-            plugins: { legend: { display: false } }
-          }
-        });
-
-        // 4. Desempenho por Categoria (Ideal para dados esparsos/poucos cliques)
-        const categoriesCombo = [...new Set(data.map(d => d.category))];
-        const catStats = categoriesCombo.map(cat => {
-            const items = data.filter(d => d.category === cat);
-            const totalClicks = items.reduce((sum, item) => sum + item.clicks, 0);
-            
-            const ratedItems = items.filter(i => i.ratingCount > 0);
-            const avgNotes = ratedItems.length 
-              ? ratedItems.reduce((sum, item) => sum + item.ratingAvg, 0) / ratedItems.length 
-              : 0;
-            
-            return { cat, totalClicks, avgNotes };
-        }).filter(c => c.totalClicks > 0 || c.avgNotes > 0);
-
-        charts.scatter = new Chart(document.getElementById("scatterChart"), {
-            type: 'bar',
-            data: {
-                labels: catStats.map(c => {
-                    // Quebra nomes grandes em duas linhas para não faltar espaço horizontal
-                    if (c.cat === 'Histórico/Cultural') return ['Histórico', 'Cultural'];
-                    if (c.cat === 'Trilhas/Mirantes') return ['Trilhas', 'Mirantes'];
-                    return c.cat;
-                }),
-                datasets: [
-                    {
-                        type: 'line',
-                        label: 'Média de Notas',
-                        data: catStats.map(c => c.avgNotes),
-                        borderColor: '#34d399',
-                        backgroundColor: '#34d399',
-                        borderWidth: 3,
-                        tension: 0.4, 
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        pointBackgroundColor: '#0f172a', 
-                        yAxisID: 'y1'
-                    },
-                    {
-                        type: 'bar',
-                        label: 'Total de Cliques',
-                        data: catStats.map(c => c.totalClicks),
-                        backgroundColor: 'rgba(56, 189, 248, 0.15)',
-                        borderColor: 'rgba(56, 189, 248, 0.8)',
-                        borderWidth: 1,
-                        borderRadius: 6,
-                        yAxisID: 'y'
-                    }
-                ]
-            },
-            options: {
-                responsive: true, 
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                scales: {
-                    x: { 
-                      grid: { display: false },
-                      ticks: { 
-                        color: '#94a3b8',
-                        maxRotation: 0,  // Força o texto a ficar reto (0 graus)
-                        minRotation: 0,  // Força o texto a ficar reto
-                        autoSkip: false, // Garante que nenhuma categoria seja ocultada
-                        font: { size: 11 } // Diminui um tiquinho a fonte para encaixar perfeito
-                      }
-                    },
-                    y: { 
-                      type: 'linear', 
-                      display: true, 
-                      position: 'left', 
-                      title: { display: true, text: 'Total de Cliques', color: '#38bdf8' },
-                      grid: { color: "rgba(148,163,184,0.1)" },
-                      ticks: { color: '#94a3b8' }
-                    },
-                    y1: { 
-                      type: 'linear', 
-                      display: true, 
-                      position: 'right', 
-                      min: 0, 
-                      max: 5, 
-                      title: { display: true, text: 'Média de Notas', color: '#34d399' },
-                      grid: { drawOnChartArea: false }, 
-                      ticks: { color: '#94a3b8' }
-                    }
-                },
-                plugins: { 
-                  legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15, color: '#cbd5e1' } },
-                  tooltip: {
-                    callbacks: {
-                      label: function(context) {
-                        let label = context.dataset.label || '';
-                        if (label) label += ': ';
-                        if (context.dataset.yAxisID === 'y1') {
-                            label += context.parsed.y.toFixed(1) + ' estrelas';
-                        } else {
-                            label += context.parsed.y + ' cliques';
-                        }
-                        return label;
-                      }
-                    }
-                  }
-                }
-            }
-          });
-      }            
-      function processAndRender() {
-        const catFilter = document.getElementById("categoryFilter").value;
-        const filteredData = catFilter === "ALL" 
-          ? globalData 
-          : globalData.filter(d => d.category === catFilter);
-        
-        updateKPIs(filteredData);
-        renderInsights(filteredData);
-        renderCharts(filteredData);
       }
 
-      async function initDashboard() {
-        try {
-          const res = await fetch(`${API_BASE}/api/stats`, { cache: "no-store" });
-          if (!res.ok) throw new Error(`Status ${res.status}`);
-          
-          const payload = await res.json();
-          const byId = payload && payload.byId ? payload.byId : {};
+      function renderRank(data) {
+        destroy("rank");
+        const n = Number(document.getElementById("topN").value);
+        const top = [...data].sort((a, b) => engagement(b) - engagement(a)).slice(0, n);
+        document.getElementById("rankWrap").style.height = Math.max(300, top.length * 30 + 60) + "px";
+        charts.rank = new Chart(document.getElementById("rankChart"), {
+          type: "bar",
+          data: {
+            labels: top.map((r) => truncate(r.name, 28)),
+            datasets: [
+              { label: "Cliques", data: top.map((r) => r.clicks), backgroundColor: "#38bdf8" },
+              { label: "Curtidas", data: top.map((r) => r.likes), backgroundColor: "#4ade80" },
+              { label: "Querem visitar", data: top.map((r) => r.visits), backgroundColor: "#d6a26b" },
+            ],
+          },
+          options: {
+            ...baseOpts(), indexAxis: "y",
+            scales: { x: { stacked: true, grid: { color: gridColor }, ticks: { color: tickColor } }, y: { stacked: true, grid: { display: false }, ticks: { color: "#e2f5ea" } } },
+          },
+        });
+      }
 
-          globalData = Object.entries(byId).map(([id, stats]) => {
-            const info = extractInfoFromId(id);
-            const clicks = Number(stats.clicks || 0);
-            const ratingCount = Number(stats.ratingCount || 0);
-            const ratingSum = Number(stats.ratingSum || 0);
+      function renderRatings(data) {
+        destroy("rating");
+        const n = Number(document.getElementById("topN").value);
+        const top = [...data].filter((r) => r.ratingCount >= 5).sort((a, b) => b.ratingAvg - a.ratingAvg).slice(0, n);
+        document.getElementById("ratingWrap").style.height = Math.max(300, top.length * 30 + 60) + "px";
+        charts.rating = new Chart(document.getElementById("ratingChart"), {
+          type: "bar",
+          data: {
+            labels: top.map((r) => truncate(r.name, 28)),
+            datasets: [{ label: "Nota média", data: top.map((r) => Number(r.ratingAvg.toFixed(2))), backgroundColor: top.map((r) => (CATEGORY_COLORS[r.category] || "#4ade80") + "cc"), borderRadius: 6 }],
+          },
+          options: {
+            ...baseOpts(), indexAxis: "y",
+            plugins: { ...baseOpts().plugins, legend: { display: false }, tooltip: { ...baseOpts().plugins.tooltip, callbacks: { afterLabel: (ctx) => `${top[ctx.dataIndex].ratingCount} avaliações • ${top[ctx.dataIndex].category}` } } },
+            scales: { x: { min: 0, max: 5, grid: { color: gridColor }, ticks: { color: tickColor } }, y: { grid: { display: false }, ticks: { color: "#e2f5ea" } } },
+          },
+        });
+      }
+
+      function renderProtected(data) {
+        destroy("protected");
+        const prot = data.filter((r) => r.protegida).reduce((a, r) => a + engagement(r), 0);
+        const other = data.filter((r) => !r.protegida).reduce((a, r) => a + engagement(r), 0);
+        charts.protected = new Chart(document.getElementById("protectedChart"), {
+          type: "pie",
+          data: { labels: ["Áreas protegidas / geossítios", "Demais áreas"], datasets: [{ data: [prot, other], backgroundColor: ["#22c55e", "#38bdf8"], borderColor: "#0c1f15", borderWidth: 3 }] },
+          options: { ...baseOpts(), plugins: { ...baseOpts().plugins, legend: { position: "bottom", labels: { color: "#cfe9da", boxWidth: 12 } } } },
+        });
+      }
+
+      function renderPledges() {
+        destroy("pledge");
+        const p = history.pledges || {};
+        charts.pledge = new Chart(document.getElementById("pledgeChart"), {
+          type: "bar",
+          data: { labels: PLEDGE_LABELS, datasets: [{ label: "Compromissos assumidos", data: PLEDGE_LABELS.map((_, i) => p[String(i)] || 0), backgroundColor: ["#4ade80", "#22c55e", "#84cc16", "#fbbf24", "#38bdf8", "#a78bfa"], borderRadius: 8 }] },
+          options: {
+            ...baseOpts(), indexAxis: "y",
+            plugins: { ...baseOpts().plugins, legend: { display: false } },
+            scales: { x: { grid: { color: gridColor }, ticks: { color: tickColor }, beginAtZero: true }, y: { grid: { display: false }, ticks: { color: "#e2f5ea" } } },
+          },
+        });
+      }
+
+      function renderTable(data) {
+        const sorted = [...data].sort((a, b) => {
+          const va = a[sortKey], vb = b[sortKey];
+          if (typeof va === "string") return va.localeCompare(vb, "pt-BR") * sortDir;
+          return (va - vb) * sortDir;
+        });
+        document.getElementById("tableBody").innerHTML = sorted.map((r) => `
+          <tr>
+            <td>${escapeHtml(r.name)} ${r.protegida ? '<span class="pill">🛡️</span>' : ""}</td>
+            <td><span class="pill pill--cat">${escapeHtml(r.category)}</span></td>
+            <td class="num">${fmt.format(r.clicks)}</td>
+            <td class="num">${fmt.format(r.likes)}</td>
+            <td class="num">${fmt.format(r.visits)}</td>
+            <td class="num">${fmt.format(r.comments)}</td>
+            <td class="num">${r.ratingCount ? r.ratingAvg.toFixed(1) + " ★" : "—"}</td>
+          </tr>`).join("");
+      }
+
+      function renderComments(data) {
+        const ids = new Set(data.map((r) => r.id));
+        const cat = document.getElementById("categoryFilter").value;
+        const list = (history.recentComments || []).filter((c) => cat === "ALL" || ids.has(c.placeId)).slice(0, 15);
+        const box = document.getElementById("recentComments");
+        if (!list.length) { box.innerHTML = '<p class="hint">Nenhum comentário ainda.</p>'; return; }
+        box.innerHTML = list.map((c) => {
+          const place = c.placeName || (c.placeId ? infoFromId(c.placeId).name : "");
+          let when = "";
+          try { when = new Date(c.date).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }); } catch {}
+          const author = String(c.author || "Visitante");
+          return `
+            <div class="comment">
+              <div class="avatar">${escapeHtml(author.charAt(0).toUpperCase())}</div>
+              <div>
+                <div class="comment__head">${escapeHtml(author)} <span>· ${escapeHtml(when)}</span> ${c.stars ? `<span class="stars">${"★".repeat(c.stars)}</span>` : ""}</div>
+                ${place ? `<div class="comment__place">📍 ${escapeHtml(place)}</div>` : ""}
+                <div class="comment__text">${escapeHtml(c.text)}</div>
+              </div>
+            </div>`;
+        }).join("");
+      }
+
+      function renderAll() {
+        const data = filtered();
+        renderKPIs(data);
+        renderInsights(data);
+        renderTimeline();
+        renderCategory(data);
+        renderRank(data);
+        renderRatings(data);
+        renderProtected(data);
+        renderPledges();
+        renderTable(data);
+        renderComments(data);
+      }
+
+      async function load() {
+        document.getElementById("error").innerHTML = "";
+        try {
+          const [stats, hist] = await Promise.all([apiGet("/api/stats"), apiGet("/api/history")]);
+          history = { daily: {}, pledges: {}, pledgeCompletions: 0, recentComments: [], meta: {}, ...hist };
+          const byId = stats.byId || {};
+          rows = Object.entries(byId).map(([id, s]) => {
+            const info = infoFromId(id);
+            const ratingCount = Number(s.ratingCount || 0), ratingSum = Number(s.ratingSum || 0);
             return {
-              id,
-              name: info.name,
-              category: info.category,
-              clicks,
-              ratingCount,
-              ratingSum,
-              ratingAvg: ratingCount > 0 ? ratingSum / ratingCount : 0,
+              id, name: info.name, category: info.category, protegida: info.protegida,
+              clicks: Number(s.clicks || 0), likes: Number(s.likes || 0), visits: Number(s.visits || 0), comments: Number(s.comments || 0),
+              ratingCount, ratingSum, ratingAvg: ratingCount ? ratingSum / ratingCount : 0,
             };
           });
 
-          document.getElementById("categoryFilter").addEventListener("change", processAndRender);
-          document.getElementById("topN").addEventListener("change", processAndRender);
+          const sel = document.getElementById("categoryFilter");
+          const current = sel.value;
+          const cats = [...new Set(rows.map((r) => r.category))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+          sel.innerHTML = '<option value="ALL">Todas as categorias</option>' + cats.map((c) => `<option>${escapeHtml(c)}</option>`).join("");
+          if (cats.includes(current)) sel.value = current;
 
-          processAndRender();
-
+          setText("updatedAt", "Atualizado às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }));
+          renderAll();
         } catch (err) {
-          document.getElementById("error").innerHTML =
-            `<div class="error">Falha ao carregar API: ${String(err.message || err)}</div>`;
+          document.getElementById("error").innerHTML = `<div class="error">Falha ao carregar a API: ${escapeHtml(err.message || err)}</div>`;
+          setText("updatedAt", "Sem conexão com a API");
         }
       }
 
-      window.addEventListener("DOMContentLoaded", initDashboard);
+      window.addEventListener("DOMContentLoaded", () => {
+        ["categoryFilter", "periodFilter", "topN"].forEach((id) => document.getElementById(id).addEventListener("change", renderAll));
+        document.getElementById("refreshBtn").addEventListener("click", load);
+        document.querySelectorAll("th[data-sort]").forEach((th) => th.addEventListener("click", () => {
+          const k = th.getAttribute("data-sort");
+          sortDir = sortKey === k ? -sortDir : (k === "name" || k === "category" ? 1 : -1);
+          sortKey = k;
+          renderTable(filtered());
+        }));
+        load();
+        setInterval(load, 60000);
+      });
     </script>
   </body>
 </html>

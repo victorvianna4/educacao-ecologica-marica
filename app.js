@@ -2,7 +2,7 @@
 
 const DOCX_PATH = "./Ecologia%20em%20Maric%C3%A1.docx";
 
-const STORAGE_KEY = "ecomarica_analytics_v1";
+const STORAGE_KEY = "ecomarica_analytics_v2"; // v2: descarta o cache local antigo (dados de demonstração maiores)
 const DEFAULT_LANG = "pt-BR";
 const API_BASE = (() => {
   const fromWindow = globalThis.MARICA_API_BASE;

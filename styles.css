@@ -399,7 +399,12 @@ body::before{
   backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
 }
 .card__close:hover{background:rgba(0,0,0,.8)}
-.card.is-expanded .card__close{display:flex; position:sticky; float:right; margin:.75rem .75rem -3.15rem auto}
+.card.is-expanded .card__close{
+  display:flex; position:sticky; top:.75rem; align-self:flex-end; flex:0 0 auto;
+  width:2.4rem; height:2.4rem; min-width:2.4rem; min-height:2.4rem; padding:0;
+  margin:.75rem .75rem -3.15rem 0;
+}
+.card__close svg{width:.85rem; height:.85rem; flex-shrink:0}
 
 /* Celulares e relógios: janela em tela cheia */
 @media (max-width:40rem){

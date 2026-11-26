@@ -475,8 +475,8 @@ const IMAGE_MAP = {
   "lagoa-de-jacone": "https://upload.wikimedia.org/wikipedia/commons/7/76/Panomiojacone.jpg",
   "beachrocks-de-jacone": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9b/Darwin_Beachrocks_at_Jacon%C3%A9_Beach_-_Rio_de_Janeiro%283%29.jpg/1920px-Darwin_Beachrocks_at_Jacon%C3%A9_Beach_-_Rio_de_Janeiro%283%29.jpg",
   // Ilustrações (SVG) para áreas ainda sem foto de licença livre
-  "ilha-cardosa": "Ilha.Cardosa.svg",
-  "ponta-do-fundao": "Ponta.do.Fundao.svg"
+  "ilha-cardosa": "Ilha.Cardosa.jpg",
+  "ponta-do-fundao": "Ponta.do.Fundao.jpg"
 };
 
 // Créditos das fotos de terceiros (exigidos pelas licenças Creative Commons)

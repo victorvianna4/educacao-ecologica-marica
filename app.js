@@ -715,6 +715,17 @@ async function bootstrapServerPoints(points) {
   await apiPost("/api/bootstrap", { ids, meta });
 }
 
+// Conta o visitante uma única vez por navegador
+function registerVisitor() {
+  try {
+    if (localStorage.getItem("ecomarica_visitor")) return;
+    localStorage.setItem("ecomarica_visitor", String(Date.now()));
+  } catch {
+    return;
+  }
+  apiPost("/api/event", { type: "visitor" }).catch(() => {});
+}
+
 function isProtectedPlace(p) {
   return /APA|Parque Estadual|Monumento Natural|Refúgio|REVIS|Geossítio|patrimônio/i.test(p.protecao || "");
 }
@@ -1473,6 +1484,8 @@ async function main() {
     $("#docHint").textContent = t("loaded", state.lang)(points.length);
 
     renderAll();
+
+    registerVisitor();
 
     bootstrapServerPoints(points).catch((err) => {
       console.warn("Aviso: Falha isolada no bootstrap (pode ser ignorado).", err);

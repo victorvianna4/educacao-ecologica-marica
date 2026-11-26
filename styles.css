@@ -223,22 +223,104 @@ body::before{
 .eco-alert__close{margin-left:auto; flex-shrink:0; border:0; background:transparent; color:var(--muted); cursor:pointer; font-size:1.1rem; width:2rem; height:2rem; border-radius:.6rem}
 .eco-alert__close:hover{background:var(--panel2)}
 
-/* Compromisso do visitante */
+/* Compromisso do visitante — cards com foto de fundo */
+.eco-guide{scroll-margin-top:5.5rem}
 .eco-guide .section__header{display:block}
 .eco-guide .section__hint{margin-top:.25rem}
-.eco-guide__grid{display:grid; gap:.75rem; grid-template-columns:repeat(auto-fit, minmax(min(100%, 15rem), 1fr))}
+.eco-guide__body{position:relative}
+.eco-guide__list{overflow:hidden; max-height:200rem; opacity:1; transition:max-height .7s cubic-bezier(.4,0,.2,1), opacity .4s ease, transform .6s ease}
+.eco-guide__body.is-complete .eco-guide__list{max-height:0; opacity:0; transform:scale(.97); pointer-events:none}
+
+.eco-guide__progress{height:.35rem; border-radius:999px; background:var(--panel2); overflow:hidden; margin-bottom:1rem; border:1px solid var(--border)}
+.eco-guide__progress span{display:block; height:100%; width:0; background:var(--grad); border-radius:inherit; transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+.eco-guide__grid{display:grid; gap:.85rem; grid-template-columns:repeat(auto-fill, minmax(min(100%, max(15.5rem, calc((100% - 1.7rem) / 3))), 1fr))}
 .eco-rule{
-  display:flex; gap:.75rem; align-items:flex-start; padding:.95rem 1rem; border-radius:var(--radius2);
-  background:var(--panel); border:1px solid var(--border); cursor:pointer; user-select:none;
-  transition:border-color .2s, background .2s, transform .15s;
+  position:relative; isolation:isolate; overflow:hidden; cursor:pointer; user-select:none;
+  min-height:9.5rem; padding:1rem 1.05rem; border-radius:var(--radius);
+  display:flex; flex-direction:column; justify-content:flex-end; gap:.6rem;
+  border:1px solid rgba(255,255,255,.12); color:#f0fdf4;
+  box-shadow:var(--shadow);
+  transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease;
+  animation:ruleIn .6s cubic-bezier(.2,.8,.2,1) backwards; animation-delay:var(--d);
 }
-.eco-rule:hover{border-color:var(--border-strong); transform:translateY(-2px)}
-.eco-rule input{accent-color:var(--brand); width:1.15rem; height:1.15rem; margin-top:.15rem; flex-shrink:0}
-.eco-rule__icon{font-size:1.35rem; line-height:1}
-.eco-rule__text{font-size:.9rem; line-height:1.45}
-.eco-rule.is-checked{background:var(--grad-soft); border-color:var(--border-strong)}
+@keyframes ruleIn{from{opacity:0; transform:translateY(12px)}}
+/* foto de fundo borrada e translúcida */
+.eco-rule::before{
+  content:""; position:absolute; inset:-12px; z-index:-2;
+  background:var(--bg) center/cover no-repeat;
+  filter:blur(3px) saturate(1.05); opacity:.72; transform:scale(1.04);
+  transition:filter .5s ease, opacity .5s ease, transform .8s ease;
+}
+/* véu escuro para leitura do texto */
+.eco-rule::after{
+  content:""; position:absolute; inset:0; z-index:-1;
+  background:linear-gradient(180deg, rgba(4,16,10,.18) 0%, rgba(4,16,10,.65) 62%, rgba(4,16,10,.88) 100%);
+  transition:background .5s ease;
+}
+.eco-rule:hover{transform:translateY(-3px); border-color:rgba(134,239,172,.45); box-shadow:var(--shadow-glow)}
+.eco-rule:hover::before{filter:blur(1.5px) saturate(1.15); opacity:.75; transform:scale(1.08)}
+.eco-rule__input{position:absolute; opacity:0; pointer-events:none}
+.eco-rule:focus-within{box-shadow:var(--ring)}
+.eco-rule__num{position:absolute; top:.8rem; left:1rem; font-family:var(--font-display); font-weight:700; font-size:.8rem; letter-spacing:.08em; opacity:.75}
+.eco-rule__check{
+  position:absolute; top:.75rem; right:.75rem; width:1.9rem; height:1.9rem; border-radius:50%;
+  display:grid; place-items:center; border:2px solid rgba(255,255,255,.7); background:rgba(0,0,0,.25);
+  backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  transition:background .3s ease, border-color .3s ease, transform .3s cubic-bezier(.2,1.6,.4,1);
+}
+.eco-rule__check svg{width:1.1rem; height:1.1rem; fill:none; stroke:#04140b; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:24; stroke-dashoffset:24; transition:stroke-dashoffset .35s ease .1s}
+.eco-rule__text{font-size:.95rem; font-weight:600; line-height:1.4; text-shadow:0 1px 8px rgba(0,0,0,.55)}
+.eco-rule.is-checked{border-color:rgba(74,222,128,.75); box-shadow:0 0 0 1px rgba(74,222,128,.5), 0 18px 40px -16px rgba(34,197,94,.6)}
+.eco-rule.is-checked::before{filter:blur(0) saturate(1.2); opacity:1}
+.eco-rule.is-checked::after{background:linear-gradient(180deg, rgba(5,46,22,.15) 0%, rgba(5,46,22,.70) 65%, rgba(5,46,22,.9) 100%)}
+.eco-rule.is-checked .eco-rule__check{background:#4ade80; border-color:#4ade80; transform:scale(1.12)}
+.eco-rule.is-checked .eco-rule__check svg{stroke-dashoffset:0}
 .eco-guide__status{margin-top:.8rem; font-weight:700; color:var(--brand2)}
 :root[data-theme="light"] .eco-guide__status{color:var(--brand)}
+
+/* Card de parabéns */
+.eco-congrats{
+  position:relative; overflow:hidden; text-align:center; display:none;
+  padding:clamp(1.75rem, 4vw, 3rem) clamp(1rem, 4vw, 3rem);
+  border-radius:calc(var(--radius) * 1.3); color:#f0fdf4;
+  background:
+    radial-gradient(60% 80% at 50% 0%, rgba(74,222,128,.35), transparent 70%),
+    linear-gradient(135deg, rgba(5,46,22,.92), rgba(8,51,68,.9) 55%, rgba(46,16,101,.85)),
+    url('./imagens/Ilha.Cardosa.jpg') center/cover;
+  border:1px solid rgba(134,239,172,.45);
+  box-shadow:0 30px 80px -30px rgba(34,197,94,.7);
+}
+.eco-guide__body.is-complete .eco-congrats{display:block; animation:congratsIn .8s cubic-bezier(.2,.9,.2,1.1) .15s backwards}
+@keyframes congratsIn{from{opacity:0; transform:translateY(16px) scale(.95)}}
+.eco-congrats::before{
+  content:""; position:absolute; inset:-50%; z-index:0; pointer-events:none;
+  background:conic-gradient(from 0deg, transparent, rgba(74,222,128,.25), transparent 30%, rgba(34,211,238,.2), transparent 60%);
+  animation:spin 14s linear infinite;
+}
+@keyframes spin{to{transform:rotate(1turn)}}
+.eco-congrats > *{position:relative; z-index:1}
+.eco-congrats__fx{position:absolute !important; inset:0; width:100%; height:100%; z-index:2; pointer-events:none}
+.eco-congrats__badge{
+  width:4.5rem; height:4.5rem; margin:0 auto 1rem; border-radius:50%; display:grid; place-items:center;
+  background:var(--grad); box-shadow:0 0 0 .5rem rgba(74,222,128,.15), 0 0 40px rgba(74,222,128,.6);
+  animation:badgePop .9s cubic-bezier(.2,1.6,.4,1) .35s backwards, glow 2.8s ease-in-out 1.2s infinite;
+}
+.eco-congrats__badge svg{width:2.4rem; height:2.4rem}
+.eco-congrats__badge path{fill:#04140b}
+.eco-congrats__badge path.vein{fill:none; stroke:#bbf7d0; stroke-width:2.5; stroke-linecap:round}
+@keyframes badgePop{from{transform:scale(0) rotate(-40deg); opacity:0}}
+@keyframes glow{50%{box-shadow:0 0 0 .8rem rgba(74,222,128,.08), 0 0 60px rgba(74,222,128,.8)}}
+.eco-congrats__eyebrow{margin:0; font-size:.75rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#86efac}
+.eco-congrats__title{margin:.35rem 0 .6rem; font-family:var(--font-display); font-size:clamp(1.5rem, 3.4vw, 2.4rem); letter-spacing:-.02em; line-height:1.1;
+  background:linear-gradient(120deg,#ecfdf5,#86efac 40%,#67e8f9 70%,#c4b5fd); -webkit-background-clip:text; background-clip:text; color:transparent}
+.eco-congrats__text{margin:0 auto 1.25rem; max-width:52ch; color:rgba(240,253,244,.88); line-height:1.6}
+.eco-congrats__review{
+  border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.08); color:#f0fdf4; cursor:pointer;
+  padding:.6rem 1.1rem; border-radius:999px; font-weight:600; font-size:.85rem; backdrop-filter:blur(6px);
+  transition:background .2s, border-color .2s;
+}
+.eco-congrats__review:hover{background:rgba(255,255,255,.16); border-color:rgba(255,255,255,.5)}
 
 /* =====================================================================
    GRID DE CARDS (auto-ajustável)
@@ -455,7 +537,6 @@ body::before{
   .hero__stats{grid-template-columns:1fr 1fr}
   .stat{padding:.55rem .6rem}
   .chip{padding:.35rem .6rem; font-size:.75rem}
-  .eco-rule__icon{display:none}
   .stars{justify-content:center}
   .card__actions{justify-content:center}
 }

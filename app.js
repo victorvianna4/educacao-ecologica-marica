@@ -74,6 +74,10 @@ const I18N = {
     ],
     guideDone: "🌎 Obrigado! Você é um guardião da natureza de Maricá.",
     guideProgress: (n, t) => `${n} de ${t} compromissos assumidos`,
+    congratsEyebrow: "Compromisso completo",
+    congratsTitle: "Parabéns, guardião da natureza!",
+    congratsText: "Você assumiu os 6 compromissos do visitante consciente. Com atitudes assim, as praias, lagoas e matas de Maricá continuam vivas para todo mundo. Boa visita!",
+    congratsReview: "Rever compromissos",
     totalLikes: "Curtidas",
     like: "Curtir",
     visitBtn: "Quero visitar",
@@ -143,6 +147,10 @@ const I18N = {
     ],
     guideDone: "🌎 Thank you! You are a guardian of Maricá's nature.",
     guideProgress: (n, t) => `${n} of ${t} commitments made`,
+    congratsEyebrow: "Pledge complete",
+    congratsTitle: "Congratulations, nature guardian!",
+    congratsText: "You took on all 6 responsible visitor commitments. With attitudes like yours, Maricá's beaches, lagoons and forests stay alive for everyone. Enjoy your visit!",
+    congratsReview: "Review commitments",
     totalLikes: "Likes",
     like: "Like",
     visitBtn: "I want to visit",
@@ -212,6 +220,10 @@ const I18N = {
     ],
     guideDone: "🌎 ¡Gracias! Eres un guardián de la naturaleza de Maricá.",
     guideProgress: (n, t) => `${n} de ${t} compromisos asumidos`,
+    congratsEyebrow: "Compromiso completo",
+    congratsTitle: "¡Felicidades, guardián de la naturaleza!",
+    congratsText: "Asumiste los 6 compromisos del visitante consciente. Con actitudes así, las playas, lagunas y bosques de Maricá siguen vivos para todos. ¡Buena visita!",
+    congratsReview: "Revisar compromisos",
     totalLikes: "Me gusta",
     like: "Me gusta",
     visitBtn: "Quiero visitar",
@@ -280,6 +292,10 @@ const I18N = {
     ],
     guideDone: "🌎 谢谢！您是马里卡大自然的守护者。",
     guideProgress: (n, t) => `已做出 ${n}/${t} 项承诺`,
+    congratsEyebrow: "承诺已完成",
+    congratsTitle: "恭喜你，自然守护者！",
+    congratsText: "你已做出全部6项文明游客承诺。正因为有你这样的行动，马里卡的海滩、潟湖和森林才能为所有人保持生机。祝你游玩愉快！",
+    congratsReview: "查看承诺",
     totalLikes: "点赞",
     like: "点赞",
     visitBtn: "我想去",
@@ -1461,27 +1477,52 @@ function renderEcoSection() {
   if (!guide) return;
   const rules = t("rules", lang);
   const checked = new Set(loadPledge());
+  const total = rules.length;
+  const allDone = () => checked.size === total;
+
   guide.innerHTML = `
     <div class="section__header">
       <h2 class="section__title">${escapeHtml(t("guideTitle", lang))}</h2>
       <p class="section__hint">${escapeHtml(t("guideHint", lang))}</p>
     </div>
-    <div class="eco-guide__grid">
-      ${rules.map(([icon, text], i) => `
-        <label class="eco-rule ${checked.has(i) ? "is-checked" : ""}">
-          <input type="checkbox" data-rule="${i}" ${checked.has(i) ? "checked" : ""} />
-          <span class="eco-rule__icon" aria-hidden="true">${icon}</span>
-          <span class="eco-rule__text">${escapeHtml(text)}</span>
-        </label>`).join("")}
-    </div>
-    <div class="eco-guide__status" aria-live="polite"></div>`;
+    <div class="eco-guide__body ${allDone() ? "is-complete" : ""}">
+      <div class="eco-guide__list">
+        <div class="eco-guide__progress" aria-hidden="true"><span></span></div>
+        <div class="eco-guide__grid">
+          ${rules.map(([, text], i) => `
+            <label class="eco-rule ${checked.has(i) ? "is-checked" : ""}" style="--bg:url('./imagens/${PLEDGE_IMAGES[i]}'); --d:${i * 70}ms">
+              <input class="eco-rule__input" type="checkbox" data-rule="${i}" ${checked.has(i) ? "checked" : ""} />
+              <span class="eco-rule__num" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span>
+              <span class="eco-rule__check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></svg></span>
+              <span class="eco-rule__text">${escapeHtml(text)}</span>
+            </label>`).join("")}
+        </div>
+        <div class="eco-guide__status" aria-live="polite"></div>
+      </div>
+      <div class="eco-congrats" role="status" aria-live="polite">
+        <canvas class="eco-congrats__fx" aria-hidden="true"></canvas>
+        <div class="eco-congrats__badge" aria-hidden="true">
+          <svg viewBox="0 0 64 64"><path d="M32 6c10 8 20 13 20 26 0 12-9 20-20 26C21 52 12 44 12 32 12 19 22 14 32 6z"/><path class="vein" d="M32 14v40M32 28l9-7M32 38l-9-7M32 46l8-5"/></svg>
+        </div>
+        <p class="eco-congrats__eyebrow">${escapeHtml(t("congratsEyebrow", lang))}</p>
+        <h3 class="eco-congrats__title">${escapeHtml(t("congratsTitle", lang))}</h3>
+        <p class="eco-congrats__text">${escapeHtml(t("congratsText", lang))}</p>
+        <button class="eco-congrats__review" type="button">${escapeHtml(t("congratsReview", lang))}</button>
+      </div>
+    </div>`;
 
+  const body = guide.querySelector(".eco-guide__body");
   const status = guide.querySelector(".eco-guide__status");
+  const bar = guide.querySelector(".eco-guide__progress span");
   const updateStatus = () => {
-    const n = checked.size;
-    status.textContent = n === rules.length ? t("guideDone", lang) : t("guideProgress", lang)(n, rules.length);
+    status.textContent = t("guideProgress", lang)(checked.size, total);
+    bar.style.width = `${(checked.size / total) * 100}%`;
   };
   updateStatus();
+
+  guide.querySelector(".eco-congrats__review").addEventListener("click", () => {
+    body.classList.remove("is-complete");
+  });
 
   guide.querySelectorAll("input[data-rule]").forEach((inp) => {
     inp.addEventListener("change", () => {
@@ -1491,19 +1532,82 @@ function renderEcoSection() {
       savePledge([...checked]);
       updateStatus();
 
+      if (inp.checked && allDone()) {
+        setTimeout(() => {
+          body.classList.add("is-complete");
+          celebrate(guide.querySelector(".eco-congrats__fx"));
+          guide.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 450);
+      }
+
       // Conta cada compromisso só uma vez por pessoa
       if (inp.checked) {
         let sent = [];
         try { sent = JSON.parse(localStorage.getItem("ecomarica_pledge_sent") || "[]"); } catch {}
         if (!sent.includes(i)) {
           sent.push(i);
-          const complete = sent.length === rules.length;
+          const complete = sent.length === total;
           try { localStorage.setItem("ecomarica_pledge_sent", JSON.stringify(sent)); } catch {}
           apiPost("/api/event", { type: "pledge", rule: i, complete }).catch(() => {});
         }
       }
     });
   });
+}
+
+// Fotos reais (do próprio site) usadas como fundo de cada compromisso
+const PLEDGE_IMAGES = [
+  "Praia.da.Barra.jpg",          // levar o lixo de volta → praia
+  "Caminhos.de.Darwin.jpeg",     // trilhas e restinga → trilha
+  "Ilha.Cardosa.jpg",            // não perturbar animais → garças na Ilha Cardosa
+  "Vale.de.S.Francisco.jpg",     // sem fogueiras/balões → Mata Atlântica
+  "Cachoeira.Espraiado.jpeg",    // não poluir a água → cachoeira
+  "Lagoa-das-Amendoeiras.jpg",   // silêncio → lagoa calma
+];
+
+// Efeito de comemoração: folhas e brilhos caindo (canvas leve, sem bibliotecas)
+function celebrate(canvas) {
+  if (!canvas || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const ctx = canvas.getContext("2d");
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  const colors = ["#4ade80", "#22c55e", "#86efac", "#2dd4bf", "#a5f3fc", "#fde68a", "#c4b5fd"];
+  const parts = Array.from({ length: 90 }, () => ({
+    x: rect.width / 2 + (Math.random() - 0.5) * 80,
+    y: rect.height * 0.35,
+    vx: (Math.random() - 0.5) * 9,
+    vy: -Math.random() * 9 - 3,
+    r: Math.random() * 6 + 4,
+    rot: Math.random() * Math.PI,
+    vr: (Math.random() - 0.5) * 0.3,
+    c: colors[(Math.random() * colors.length) | 0],
+    leaf: Math.random() < 0.6,
+  }));
+  const start = performance.now();
+  const step = (now) => {
+    const tms = now - start;
+    ctx.clearRect(0, 0, rect.width, rect.height);
+    for (const p of parts) {
+      p.vy += 0.22; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, 1 - tms / 3200);
+      ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c;
+      if (p.leaf) {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.r, p.r * 0.45, 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillRect(-p.r / 3, -p.r / 3, p.r / 1.5, p.r / 1.5);
+      }
+      ctx.restore();
+    }
+    if (tms < 3200) requestAnimationFrame(step);
+    else ctx.clearRect(0, 0, rect.width, rect.height);
+  };
+  requestAnimationFrame(step);
 }
 
 const state = {

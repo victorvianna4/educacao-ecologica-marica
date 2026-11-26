@@ -64,7 +64,7 @@
       .select:focus { border-color: var(--leaf); }
       .updated { margin-left: auto; color: var(--muted); font-size: 12px; align-self: center; }
 
-      .kpi-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; margin-bottom: 20px; }
+      .kpi-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; margin-bottom: 20px; }
       .kpi { padding: 16px; border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); position: relative; overflow: hidden; }
       .kpi::after { content: ""; position: absolute; inset: auto -20px -30px auto; width: 90px; height: 90px; border-radius: 50%; background: var(--accent, var(--leaf)); opacity: .08; }
       .kpi__icon { font-size: 20px; }
@@ -109,6 +109,7 @@
       .error { color: #fecaca; background: rgba(127, 29, 29, 0.4); border: 1px solid #7f1d1d; border-radius: 12px; padding: 16px; margin-top: 20px; }
       .footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 26px; }
 
+      @media (max-width: 1250px) { .kpi-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
       @media (max-width: 1100px) {
         .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .grid--2, .grid--2b, .grid--3 { grid-template-columns: 1fr; }
@@ -167,6 +168,7 @@
       </div>
 
       <section class="kpi-grid" aria-label="Indicadores">
+        <div class="kpi" style="--accent: #f0fdf4"><span class="kpi__icon">👥</span><span class="kpi__label">Visitantes</span><span class="kpi__value" id="kpiVisitors">0</span><span class="kpi__sub" id="kpiVisitorsSub">&nbsp;</span></div>
         <div class="kpi" style="--accent: var(--water)"><span class="kpi__icon">🗺️</span><span class="kpi__label">Cliques no mapa</span><span class="kpi__value" id="kpiClicks">0</span><span class="kpi__sub" id="kpiClicksSub">&nbsp;</span></div>
         <div class="kpi" style="--accent: var(--sun)"><span class="kpi__icon">⭐</span><span class="kpi__label">Avaliações</span><span class="kpi__value" id="kpiRatings">0</span><span class="kpi__sub" id="kpiAvg">média —</span></div>
         <div class="kpi" style="--accent: var(--leaf)"><span class="kpi__icon">💚</span><span class="kpi__label">Curtidas</span><span class="kpi__value" id="kpiLikes">0</span><span class="kpi__sub" id="kpiLikesSub">&nbsp;</span></div>
@@ -183,7 +185,7 @@
       <section class="grid grid--2">
         <div class="card">
           <h2>Evolução das interações</h2>
-          <p class="hint">Cliques, curtidas, intenções de visita, comentários e compromissos por dia.</p>
+          <p class="hint">Visitantes, cliques, curtidas, intenções de visita, comentários e compromissos por dia.</p>
           <div class="chart"><canvas id="timelineChart"></canvas></div>
         </div>
         <div class="card">
@@ -201,7 +203,7 @@
         </div>
         <div class="card">
           <h2>Melhor avaliadas pelos visitantes</h2>
-          <p class="hint">Média de estrelas (mínimo de 5 avaliações).</p>
+          <p class="hint">Média de estrelas (mínimo de 3 avaliações).</p>
           <div class="chart chart--tall" id="ratingWrap"><canvas id="ratingChart"></canvas></div>
         </div>
       </section>
@@ -356,6 +358,8 @@
         const per = (f) => sumRange(f, keys);
         const label = days >= 9999 ? "no histórico" : `nos últimos ${days} dias`;
 
+        setText("kpiVisitors", fmt.format(history.visitors || 0));
+        setText("kpiVisitorsSub", `+${fmt.format(per("visitors"))} ${label}`);
         setText("kpiClicks", fmt.format(clicks));
         setText("kpiClicksSub", `+${fmt.format(per("clicks"))} ${label}`);
         setText("kpiRatings", fmt.format(ratings));
@@ -376,7 +380,7 @@
         const box = document.querySelector("#insights ul");
         if (!data.length) { box.innerHTML = "<li>Nenhum dado para o filtro selecionado.</li>"; return; }
         const topEng = [...data].sort((a, b) => engagement(b) - engagement(a))[0];
-        const best = [...data].filter((r) => r.ratingCount >= 5).sort((a, b) => b.ratingAvg - a.ratingAvg)[0];
+        const best = [...data].filter((r) => r.ratingCount >= 3).sort((a, b) => b.ratingAvg - a.ratingAvg)[0];
         const wish = [...data].sort((a, b) => b.visits - a.visits)[0];
 
         const catTotals = {};
@@ -402,7 +406,7 @@
           topCat ? `<li>🌍 O ecossistema que mais desperta interesse é <strong>${escapeHtml(topCat[0])}</strong> (${((topCat[1] / totalEng) * 100).toFixed(0)}% do engajamento).</li>` : "",
           `<li>🛡️ <strong>${protShare}%</strong> do interesse está em áreas protegidas ou geossítios — ótimo momento para reforçar as regras de visitação.</li>`,
           wish && wish.visits ? `<li>🧭 <strong>${fmt.format(wish.visits)}</strong> pessoas planejam visitar <strong>${escapeHtml(wish.name)}</strong>: vale reforçar a sinalização de descarte de lixo por lá.</li>` : "",
-          `<li>🗑️ <strong>${fmt.format(trashPledge)}</strong> visitantes se comprometeram a levar o lixo de volta${growth !== null ? `; as interações ${growth >= 0 ? "cresceram" : "caíram"} <strong>${Math.abs(growth)}%</strong> na última semana` : ""}.</li>`,
+          `<li>🗑️ <strong>${fmt.format(trashPledge)}</strong> visitantes se comprometeram a levar o lixo de volta${growth === null ? "" : Math.abs(growth) < 3 ? "; as interações ficaram estáveis na última semana" : `; as interações ${growth > 0 ? "cresceram" : "caíram"} <strong>${Math.abs(growth)}%</strong> na última semana`}.</li>`,
         ].join("");
       }
 
@@ -422,6 +426,7 @@
         const keys = dateKeys(days);
         const labels = keys.map((k) => { const [y, m, d] = k.split("-"); return `${d}/${m}`; });
         const series = [
+          ["visitors", "Visitantes", "#f0fdf4"],
           ["clicks", "Cliques no mapa", "#38bdf8"],
           ["likes", "Curtidas", "#4ade80"],
           ["visits", "Querem visitar", "#d6a26b"],
@@ -435,7 +440,7 @@
             datasets: series.map(([f, label, color]) => ({
               label, borderColor: color, backgroundColor: color + "22",
               data: keys.map((k) => (history.daily[f] || {})[k] || 0),
-              tension: 0.35, pointRadius: keys.length > 40 ? 0 : 2, borderWidth: 2, fill: f === "clicks",
+              tension: 0.35, pointRadius: keys.length > 40 ? 0 : 2, borderWidth: 2, fill: f === "visitors",
             })),
           },
           options: {
@@ -489,7 +494,7 @@
       function renderRatings(data) {
         destroy("rating");
         const n = Number(document.getElementById("topN").value);
-        const top = [...data].filter((r) => r.ratingCount >= 5).sort((a, b) => b.ratingAvg - a.ratingAvg).slice(0, n);
+        const top = [...data].filter((r) => r.ratingCount >= 3).sort((a, b) => b.ratingAvg - a.ratingAvg).slice(0, n);
         document.getElementById("ratingWrap").style.height = Math.max(300, top.length * 30 + 60) + "px";
         charts.rating = new Chart(document.getElementById("ratingChart"), {
           type: "bar",

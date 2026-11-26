@@ -16,6 +16,13 @@ module.exports = async (req, res) => {
     const body = await readJsonBody(req).catch(() => ({}));
     const type = String(body.type || "");
 
+    if (type === "visitor") {
+      // Novo visitante único (o navegador marca para contar só uma vez)
+      await kv.incr(`${P}:visitors`);
+      await bumpDaily(kv, "visitors");
+      return ok(res, { ok: true });
+    }
+
     if (type === "pledge") {
       const rule = Number(body.rule);
       if (!Number.isInteger(rule) || rule < 0 || rule >= RULES) return badRequest(res, "Invalid rule");

@@ -45,7 +45,7 @@ module.exports = { allowCors, readJsonBody, ok, badRequest, internalError };
 
 // ====== Utilitários do Educação Ecológica ======
 const P = "ecomarica";
-const DAILY_FIELDS = ["clicks", "ratings", "likes", "visits", "comments", "pledges"];
+const DAILY_FIELDS = ["visitors", "clicks", "ratings", "likes", "visits", "comments", "pledges"];
 
 // Data de hoje no fuso de Maricá (America/Sao_Paulo), formato AAAA-MM-DD
 const today = () =>

@@ -15,11 +15,12 @@ module.exports = async (req, res) => {
     const pledgesRaw = (await kv.hgetall(`${P}:pledges`)) || {};
     const pledges = Object.fromEntries(Object.entries(pledgesRaw).map(([k, n]) => [k, Number(n) || 0]));
     const pledgeCompletions = Number((await kv.get(`${P}:pledgeCompletions`)) || 0);
+    const visitors = Number((await kv.get(`${P}:visitors`)) || 0);
     const recentComments = (await kv.lrange(`${P}:recentComments`, 0, 19)) || [];
     const meta = (await kv.hgetall(`${P}:meta`)) || {};
 
     res.setHeader("Cache-Control", "no-store");
-    ok(res, { daily, pledges, pledgeCompletions, recentComments, meta });
+    ok(res, { daily, pledges, pledgeCompletions, visitors, recentComments, meta });
   } catch (err) {
     console.error("api/history", err);
     allowCors(res);

@@ -66,6 +66,18 @@ const I18N = {
     ],
     guideDone: "🌎 Obrigado! Você é um guardião da natureza de Maricá.",
     guideProgress: (n, t) => `${n} de ${t} compromissos assumidos`,
+    totalLikes: "Curtidas",
+    like: "Curtir",
+    visitBtn: "Quero visitar",
+    visitDone: "Visita planejada",
+    visitsLabel: (n) => `${n} pessoa(s) querem visitar`,
+    commentsTitle: "O que os visitantes dizem",
+    commentName: "Seu nome (opcional)",
+    commentText: "Conte como foi sua visita e o que você fez para preservar…",
+    commentSend: "Comentar",
+    commentThanks: "Obrigado pelo comentário! 🌿",
+    commentError: "Não foi possível enviar agora. Tente novamente.",
+    commentsCount: (n) => `${n} comentário(s)`,
   },
   en: {
     subtitle: "Ecological Education",
@@ -115,6 +127,18 @@ const I18N = {
     ],
     guideDone: "🌎 Thank you! You are a guardian of Maricá's nature.",
     guideProgress: (n, t) => `${n} of ${t} commitments made`,
+    totalLikes: "Likes",
+    like: "Like",
+    visitBtn: "I want to visit",
+    visitDone: "Visit planned",
+    visitsLabel: (n) => `${n} people want to visit`,
+    commentsTitle: "What visitors say",
+    commentName: "Your name (optional)",
+    commentText: "Tell us about your visit and what you did to protect it…",
+    commentSend: "Comment",
+    commentThanks: "Thanks for your comment! 🌿",
+    commentError: "Could not send right now. Please try again.",
+    commentsCount: (n) => `${n} comment(s)`,
   },
   es: {
     subtitle: "Educación Ecológica",
@@ -164,6 +188,18 @@ const I18N = {
     ],
     guideDone: "🌎 ¡Gracias! Eres un guardián de la naturaleza de Maricá.",
     guideProgress: (n, t) => `${n} de ${t} compromisos asumidos`,
+    totalLikes: "Me gusta",
+    like: "Me gusta",
+    visitBtn: "Quiero visitar",
+    visitDone: "Visita planeada",
+    visitsLabel: (n) => `${n} persona(s) quieren visitar`,
+    commentsTitle: "Lo que dicen los visitantes",
+    commentName: "Tu nombre (opcional)",
+    commentText: "Cuenta cómo fue tu visita y qué hiciste para preservar…",
+    commentSend: "Comentar",
+    commentThanks: "¡Gracias por tu comentario! 🌿",
+    commentError: "No se pudo enviar ahora. Inténtalo de nuevo.",
+    commentsCount: (n) => `${n} comentario(s)`,
   },
   zh: {
     subtitle: "生态教育",
@@ -212,6 +248,18 @@ const I18N = {
     ],
     guideDone: "🌎 谢谢！您是马里卡大自然的守护者。",
     guideProgress: (n, t) => `已做出 ${n}/${t} 项承诺`,
+    totalLikes: "点赞",
+    like: "点赞",
+    visitBtn: "我想去",
+    visitDone: "已计划参观",
+    visitsLabel: (n) => `${n} 人想去`,
+    commentsTitle: "游客评论",
+    commentName: "您的名字（可选）",
+    commentText: "分享您的游览经历以及您为保护环境所做的事…",
+    commentSend: "评论",
+    commentThanks: "感谢您的评论！🌿",
+    commentError: "暂时无法发送，请重试。",
+    commentsCount: (n) => `${n} 条评论`,
   },
 };
 
@@ -449,6 +497,41 @@ function getCommentsForPlace(p) {
   return [c1, c2];
 }
 
+function renderCommentItem(c) {
+  const author = String(c.author || "Visitante");
+  const stars = Number(c.stars) || 0;
+  let when = "";
+  if (c.date) {
+    try {
+      when = new Date(c.date).toLocaleDateString(state.lang === "pt-BR" ? "pt-BR" : state.lang, { day: "2-digit", month: "short" });
+    } catch { when = ""; }
+  }
+  return `
+    <div class="comment-item">
+      <div class="comment-avatar">${escapeHtml(author.charAt(0).toUpperCase())}</div>
+      <div>
+        <div class="comment-author">${escapeHtml(author)}${stars ? ` <span class="comment-stars">${"★".repeat(stars)}</span>` : ""}${when ? ` <span class="comment-date">· ${escapeHtml(when)}</span>` : ""}</div>
+        <div class="comment-text">${escapeHtml(c.text || "")}</div>
+      </div>
+    </div>`;
+}
+
+const commentsCache = {};
+async function loadServerComments(card, id) {
+  const listEl = card.querySelector("[data-comments]");
+  if (!listEl) return;
+  try {
+    if (!commentsCache[id]) {
+      const r = await apiGet(`/api/comment?id=${encodeURIComponent(id)}`);
+      commentsCache[id] = Array.isArray(r.comments) ? r.comments : [];
+    }
+    const list = commentsCache[id];
+    if (list.length) listEl.innerHTML = list.slice(0, 6).map(renderCommentItem).join("");
+  } catch {
+    // mantém os comentários gerados localmente
+  }
+}
+
 function tData(text, lang) {
   if (!text || lang === "pt-BR") return text;
   let t = String(text).trim();
@@ -550,6 +633,9 @@ function ensureEntry(state, id) {
     clicks: 0,
     ratingCount: 0,
     ratingSum: 0,
+    likes: 0,
+    visits: 0,
+    comments: 0,
     lastRatedAt: null,
   };
   return state.byId[id];
@@ -593,6 +679,11 @@ function mergeAnalyticsEntryFromServer(entry, raw) {
   } else if (server.ratingCount > 0) {
     entry.ratingSum = Math.max(lrs, server.ratingSum);
   }
+
+  // Curtidas, intenções de visita e comentários: o servidor é a fonte da verdade
+  for (const f of ["likes", "visits", "comments"]) {
+    if (raw[f] !== undefined) entry[f] = Math.max(0, Number(raw[f]) || 0);
+  }
 }
 
 async function syncFromServer() {
@@ -612,7 +703,20 @@ async function syncFromServer() {
 async function bootstrapServerPoints(points) {
   const ids = Array.from(new Set(points.map((p) => p.id).filter(Boolean)));
   if (ids.length === 0) return;
-  await apiPost("/api/bootstrap", { ids });
+  const meta = {};
+  for (const p of points) {
+    meta[p.id] = {
+      nome: p.nome,
+      categoria: p.categoria,
+      bairro: p.bairro || "",
+      protegida: isProtectedPlace(p),
+    };
+  }
+  await apiPost("/api/bootstrap", { ids, meta });
+}
+
+function isProtectedPlace(p) {
+  return /APA|Parque Estadual|Monumento Natural|Refúgio|REVIS|Geossítio|patrimônio/i.test(p.protecao || "");
 }
 
 function t(key, lang) {
@@ -754,12 +858,14 @@ function parseDocTextToPoints(text) {
 function computeStats(points, analyticsState) {
   let totalClicks = 0;
   let totalRatingVotes = 0;
+  let totalLikes = 0;
   for (const p of points) {
     const e = analyticsState.byId[p.id];
     totalClicks += e?.clicks ?? 0;
     totalRatingVotes += e?.ratingCount ?? 0;
+    totalLikes += e?.likes ?? 0;
   }
-  return { total: points.length, totalRatingVotes, totalClicks };
+  return { total: points.length, totalRatingVotes, totalClicks, totalLikes };
 }
 
 function renderChips(categories, active, lang) {
@@ -810,7 +916,7 @@ function renderCard(p, analyticsState, lang) {
 
   const comments = getCommentsForPlace(p);
 
-  const isProtected = /APA|Parque Estadual|Monumento Natural|Refúgio|REVIS|Geossítio|patrimônio/i.test(p.protecao || "");
+  const isProtected = isProtectedPlace(p);
   let tipToUse = p.dica || "";
   if (lang !== "pt-BR" && CATEGORY_TIPS[p.categoria]?.[lang]) tipToUse = CATEGORY_TIPS[p.categoria][lang];
 
@@ -850,15 +956,18 @@ function renderCard(p, analyticsState, lang) {
               ` : ""}
               
               <div class="card__comments">
-                ${comments.map(c => `
-                  <div class="comment-item">
-                    <div class="comment-avatar">${c.author.charAt(0)}</div>
-                    <div>
-                      <div class="comment-author">${escapeHtml(c.author)}</div>
-                      <div class="comment-text">${escapeHtml(c.text)}</div>
-                    </div>
+                <div class="comments__title">💬 ${escapeHtml(t("commentsTitle", lang))} <span class="comments__count">${escapeHtml(t("commentsCount", lang)(e.comments || comments.length))}</span></div>
+                <div class="comments__list" data-comments>
+                  ${comments.map(renderCommentItem).join("")}
+                </div>
+                <form class="comment-form" data-comment-form>
+                  <input class="comment-form__name" name="author" maxlength="40" placeholder="${escapeHtml(t("commentName", lang))}" />
+                  <textarea class="comment-form__text" name="text" maxlength="400" rows="2" required placeholder="${escapeHtml(t("commentText", lang))}"></textarea>
+                  <div class="comment-form__row">
+                    <span class="comment-form__status" aria-live="polite"></span>
+                    <button class="link comment-form__send" type="submit">${escapeHtml(t("commentSend", lang))}</button>
                   </div>
-                `).join("")}
+                </form>
               </div>
             </div>
           </div>
@@ -892,6 +1001,14 @@ function renderCard(p, analyticsState, lang) {
 
             <div class="clicks"><span data-clicks>${e.clicks || 0}</span> ${escapeHtml(t("clicks", lang))}</div>
           </div>
+          <div class="card__eco-actions">
+            <button class="eco-btn like-btn" type="button" data-action="like" aria-pressed="${e.myLike ? "true" : "false"}" aria-label="${escapeHtml(t("like", lang))}">
+              <span aria-hidden="true">${e.myLike ? "💚" : "🤍"}</span> <span data-likes>${e.likes || 0}</span>
+            </button>
+            <button class="eco-btn visit-btn" type="button" data-action="visit" aria-pressed="${e.myVisit ? "true" : "false"}" title="${escapeHtml(t("visitsLabel", lang)(e.visits || 0))}">
+              <span aria-hidden="true">🧭</span> <span data-visit-label>${escapeHtml(e.myVisit ? t("visitDone", lang) : t("visitBtn", lang))}</span> · <span data-visits>${e.visits || 0}</span>
+            </button>
+          </div>
         </div>
       </article>
     </div>
@@ -908,7 +1025,7 @@ function wireCardEvents(points, lang) {
     if (!p) return;
 
     card.addEventListener("click", (e) => {
-      if(e.target.closest('.star-btn') || e.target.closest('.link') || e.target.closest('.card__close')) {
+      if(e.target.closest('.star-btn') || e.target.closest('.link') || e.target.closest('.card__close') || e.target.closest('.eco-btn') || e.target.closest('[data-comment-form]')) {
         return;
       }
       
@@ -965,6 +1082,90 @@ function wireCardEvents(points, lang) {
           } catch (err) {
             console.log('Falha ao copiar', err);
           }
+        }
+      });
+    }
+
+    // Carrega comentários reais ao abrir o card
+    card.addEventListener("click", () => {
+      if (card.classList.contains("is-expanded")) loadServerComments(card, id);
+    });
+
+    // Curtir / descurtir
+    const likeBtn = card.querySelector('[data-action="like"]');
+    if (likeBtn) {
+      likeBtn.addEventListener("click", async (ev) => {
+        ev.stopPropagation();
+        const entry = ensureEntry(analytics, id);
+        const liking = !entry.myLike;
+        entry.myLike = liking;
+        entry.likes = Math.max(0, (entry.likes || 0) + (liking ? 1 : -1));
+        saveAnalytics(analytics);
+        likeBtn.setAttribute("aria-pressed", liking ? "true" : "false");
+        likeBtn.querySelector("span").textContent = liking ? "💚" : "🤍";
+        likeBtn.querySelector("[data-likes]").textContent = String(entry.likes);
+        renderStats();
+        try {
+          const r = await apiPost("/api/event", { type: liking ? "like" : "unlike", id });
+          entry.likes = Number(r.likes ?? entry.likes);
+          saveAnalytics(analytics);
+          likeBtn.querySelector("[data-likes]").textContent = String(entry.likes);
+          renderStats();
+        } catch {}
+      });
+    }
+
+    // Quero visitar (uma vez por pessoa)
+    const visitBtn = card.querySelector('[data-action="visit"]');
+    if (visitBtn) {
+      visitBtn.addEventListener("click", async (ev) => {
+        ev.stopPropagation();
+        const entry = ensureEntry(analytics, id);
+        if (entry.myVisit) return;
+        entry.myVisit = true;
+        entry.visits = (entry.visits || 0) + 1;
+        saveAnalytics(analytics);
+        visitBtn.setAttribute("aria-pressed", "true");
+        visitBtn.querySelector("[data-visit-label]").textContent = t("visitDone", state.lang);
+        visitBtn.querySelector("[data-visits]").textContent = String(entry.visits);
+        try {
+          const r = await apiPost("/api/event", { type: "visit", id });
+          entry.visits = Number(r.visits ?? entry.visits);
+          saveAnalytics(analytics);
+          visitBtn.querySelector("[data-visits]").textContent = String(entry.visits);
+        } catch {}
+      });
+    }
+
+    // Enviar comentário
+    const form = card.querySelector("[data-comment-form]");
+    if (form) {
+      form.addEventListener("click", (ev) => ev.stopPropagation());
+      form.addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const status = form.querySelector(".comment-form__status");
+        const author = form.author.value.trim();
+        const text = form.text.value.trim();
+        if (text.length < 3) return;
+        const entry = ensureEntry(analytics, id);
+        const btn = form.querySelector("button[type=submit]");
+        btn.disabled = true;
+        try {
+          const r = await apiPost("/api/comment", { id, author, text, stars: entry.myRating || 0 });
+          const c = r.comment || { author: author || "Visitante", text, stars: entry.myRating || 0, date: new Date().toISOString() };
+          commentsCache[id] = [c, ...(commentsCache[id] || [])];
+          card.querySelector("[data-comments]").insertAdjacentHTML("afterbegin", renderCommentItem(c));
+          entry.comments = Number(r.comments ?? (entry.comments || 0) + 1);
+          saveAnalytics(analytics);
+          const countEl = card.querySelector(".comments__count");
+          if (countEl) countEl.textContent = t("commentsCount", state.lang)(entry.comments);
+          form.reset();
+          status.textContent = t("commentThanks", state.lang);
+        } catch {
+          status.textContent = t("commentError", state.lang);
+        } finally {
+          btn.disabled = false;
         }
       });
     }
@@ -1038,10 +1239,12 @@ function wireCardEvents(points, lang) {
 }
 
 function renderStats() {
-  const { total, totalRatingVotes, totalClicks } = computeStats(
+  const { total, totalRatingVotes, totalClicks, totalLikes } = computeStats(
     state.points,
     state.analytics,
   );
+  const likesEl = $("#statLikes");
+  if (likesEl) likesEl.textContent = String(totalLikes);
   $("#statTotal").textContent = String(total);
   $("#statRated").textContent = String(totalRatingVotes);
   $("#statClicks").textContent = String(totalClicks);
@@ -1209,6 +1412,18 @@ function renderEcoSection() {
       inp.closest(".eco-rule").classList.toggle("is-checked", inp.checked);
       savePledge([...checked]);
       updateStatus();
+
+      // Conta cada compromisso só uma vez por pessoa
+      if (inp.checked) {
+        let sent = [];
+        try { sent = JSON.parse(localStorage.getItem("ecomarica_pledge_sent") || "[]"); } catch {}
+        if (!sent.includes(i)) {
+          sent.push(i);
+          const complete = sent.length === rules.length;
+          try { localStorage.setItem("ecomarica_pledge_sent", JSON.stringify(sent)); } catch {}
+          apiPost("/api/event", { type: "pledge", rule: i, complete }).catch(() => {});
+        }
+      }
     });
   });
 }

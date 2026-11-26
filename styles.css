@@ -743,3 +743,34 @@ button, input, select, textarea{font:inherit}
 
 .eco-guide .section__header{display:block}
 .eco-guide .section__hint{margin-top:4px}
+
+/* ====== Interações: curtir, quero visitar, comentários ====== */
+.hero__stats{grid-template-rows:none; grid-template-columns: 1fr 1fr; align-content: stretch}
+.card__expanded-row{flex-direction:column}
+.card__map-container{min-height:140px; flex:none; height:140px}
+.card__comments{justify-content:flex-start; font-size:12px; gap:8px}
+.comments__title{font-weight:800; font-size:13px; color:var(--text); display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap}
+.comments__count{font-weight:600; color:var(--muted)}
+.comments__list{max-height:220px; overflow:auto; padding-right:4px}
+.comment-stars{color:#F59E0B; font-size:11px; letter-spacing:1px}
+.comment-date{color:var(--muted2); font-weight:500; font-size:11px}
+.comment-form{display:flex; flex-direction:column; gap:6px; margin-top:4px; padding-top:8px; border-top:1px dashed var(--border)}
+.comment-form input, .comment-form textarea{
+  width:100%; border:1px solid var(--border); background:var(--bg); color:var(--text);
+  border-radius:10px; padding:8px 10px; font-size:13px; resize:vertical;
+}
+.comment-form input:focus, .comment-form textarea:focus{outline:none; box-shadow:var(--ring); border-color:var(--brand)}
+.comment-form__row{display:flex; justify-content:space-between; align-items:center; gap:8px}
+.comment-form__status{font-size:12px; color:var(--brand); font-weight:600}
+.comment-form__send{padding:6px 14px}
+
+.card__eco-actions{display:flex; gap:8px; flex-wrap:wrap}
+.eco-btn{
+  display:inline-flex; align-items:center; gap:6px;
+  border:1px solid var(--border); background:var(--panel); color:var(--text);
+  border-radius:999px; padding:6px 12px; font-size:13px; font-weight:600; cursor:pointer;
+  transition: background .15s, border-color .15s, transform .08s;
+}
+.eco-btn:hover{border-color: rgba(21,128,61,.55)}
+.eco-btn:active{transform:translateY(1px)}
+.eco-btn[aria-pressed="true"]{background: rgba(21,128,61,.12); border-color: rgba(21,128,61,.55); color: var(--brand)}

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Educação Ecológica em Maricá</title>
+    <meta
+      name="description"
+      content="Educação Ecológica em Maricá: áreas protegidas, restingas em reflorestamento, lagoas, matas e praias preservadas, com mapa, avaliações e dicas de conscientização ambiental."
+    />
+
+    <link rel="icon" href="./imagens/logo.jpg" type="image/jpeg" />
+
+    <link rel="preconnect" href="https://unpkg.com" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+    <header class="header">
+      <div class="container header__inner">
+        <div class="brand">
+          <div class="brand__badge" aria-hidden="true">
+            <img src="./imagens/logo.jpg" alt="Brasão de Maricá" class="brand__logo-img" />
+          </div>
+          <div class="brand__text">
+            <div class="brand__title">Maricá</div>
+            <div class="brand__subtitle" data-i18n="subtitle">Educação Ecológica</div>
+          </div>
+        </div>
+
+        <div class="header__actions">
+          <!-- Botão de Tema (Claro/Escuro) -->
+          <button id="themeToggle" class="icon-btn" aria-label="Alternar tema" title="Alternar tema">
+            ☀️
+          </button>
+
+          <label class="select" aria-label="Idioma">
+            <span class="select__label" data-i18n="language">Idioma</span>
+            <select id="languageSelect" class="select__control">
+              <option value="pt-BR">Português (Brasil)</option>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+              <option value="zh">中文</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </header>
+
+    <main id="conteudo" class="main">
+      <div class="container">
+        <section class="hero" aria-labelledby="heroTitle">
+          <div class="hero__content">
+            <h1 id="heroTitle" class="hero__title" data-i18n="heroTitle">
+              Educação Ecológica em Maricá
+            </h1>
+            <p class="hero__desc" data-i18n="heroDesc">
+              Conheça as áreas protegidas, as restingas em reflorestamento, as lagoas em recuperação e as matas de Maricá.
+            </p>
+
+            <div class="hero__controls">
+              <div class="search">
+                <input
+                  id="searchInput"
+                  class="search__input"
+                  type="search"
+                  placeholder="Buscar por nome, bairro, categoria ou proteção…"
+                  data-i18n-placeholder="searchPlaceholder"
+                  autocomplete="off"
+                />
+              </div>
+
+              <div class="chips" id="categoryChips" aria-label="Categorias"></div>
+            </div>
+
+            <div id="ecoAlert" class="eco-alert" role="note"></div>
+          </div>
+
+          <div class="hero__stats" aria-label="Resumo">
+            <div class="stat">
+              <div class="stat__value" id="statTotal">—</div>
+              <div class="stat__label" data-i18n="totalPoints">Áreas Naturais</div>
+            </div>
+            <div class="stat">
+              <div class="stat__value" id="statRated">—</div>
+              <div class="stat__label" data-i18n="ratedPoints">Avaliados</div>
+            </div>
+            <div class="stat">
+              <div class="stat__value" id="statClicks">—</div>
+              <div class="stat__label" data-i18n="totalClicks">Cliques no Mapa</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="ecoGuide" class="section eco-guide" aria-label="Compromisso do visitante"></section>
+
+        <section class="section" aria-labelledby="listTitle">
+          <div class="section__header">
+            <h2 id="listTitle" class="section__title" data-i18n="listTitle">Áreas para visitar e preservar</h2>
+            <p class="section__hint" id="docHint" data-i18n="docHint">
+              Carregando dados do arquivo…
+            </p>
+          </div>
+
+          <div id="grid" class="grid" aria-live="polite"></div>
+        </section>
+
+        <a href="/dashboard" style="display: block; text-decoration: none; color: inherit;">
+          <footer class="footer" style="cursor: pointer; transition: background 0.2s ease;" onmouseover="this.style.background='var(--panel2)'" onmouseout="this.style.background='var(--panel)'">
+            <div class="footer__note" data-i18n="footerNote">
+              Ver o painel: as interações na plataforma alimentam um banco de dados global (Vercel KV).
+            </div>
+          </footer>
+        </a>
+      </div>
+    </main>
+
+    <script src="https://unpkg.com/mammoth@1.8.0/mammoth.browser.min.js"></script>
+    <script src="./app.js" defer></script>
+  </body>
+</html>

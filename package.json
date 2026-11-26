@@ -1,0 +1,13 @@
+{
+  "name": "educacao-ecologica-marica",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Educação Ecológica em Maricá (static + Vercel KV)",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@vercel/kv": "^3.0.0"
+  }
+}
+

@@ -2,7 +2,7 @@
 
 const DOCX_PATH = "./Ecologia%20em%20Maric%C3%A1.docx";
 
-const STORAGE_KEY = "ecomarica_analytics_v2"; // v2: descarta o cache local antigo (dados de demonstração maiores)
+const STORAGE_KEY = "ecomarica_analytics_v3"; // trocar a versão descarta o cache local antigo
 const DEFAULT_LANG = "pt-BR";
 const API_BASE = (() => {
   const fromWindow = globalThis.MARICA_API_BASE;
@@ -706,20 +706,10 @@ function mergeAnalyticsEntryFromServer(entry, raw) {
     ratingSum: Number(raw.ratingSum ?? 0),
   };
 
-  const lc = Number(entry.clicks) || 0;
-  entry.clicks = Math.max(lc, server.clicks);
-
-  const lrc = Number(entry.ratingCount) || 0;
-  const lrs = Number(entry.ratingSum) || 0;
-
-  if (server.ratingCount > lrc) {
-    entry.ratingCount = server.ratingCount;
-    entry.ratingSum = server.ratingSum;
-  } else if (server.ratingCount < lrc) {
-    // Mantém local
-  } else if (server.ratingCount > 0) {
-    entry.ratingSum = Math.max(lrs, server.ratingSum);
-  }
+  // O servidor é a fonte da verdade (evita números antigos presos no navegador)
+  entry.clicks = server.clicks;
+  entry.ratingCount = server.ratingCount;
+  entry.ratingSum = server.ratingSum;
 
   // Curtidas, intenções de visita e comentários: o servidor é a fonte da verdade
   for (const f of ["likes", "visits", "comments"]) {

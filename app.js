@@ -21,8 +21,15 @@ const I18N = {
   "pt-BR": {
     subtitle: "Educação Ecológica",
     language: "Idioma",
-    dashboard: "Dashboard",
+    dashboard: "Painel",
     heroTitle: "Educação Ecológica em Maricá",
+    heroBadge: "Guia ecológico interativo de Maricá",
+    heroTitleA: "Educação Ecológica",
+    heroTitleB: "em Maricá",
+    listEyebrow: "Explore",
+    footerTitle: "Painel ambiental em tempo real",
+    footerCta: "Abrir painel",
+    credits: "Educação Ecológica em Maricá • Visite, aprenda e preserve 🌿",
     heroDesc:
       "Conheça as áreas protegidas, as restingas em reflorestamento, as lagoas em recuperação e as matas de Maricá. Passeie, aprenda e ajude a preservar: suas avaliações alimentam nosso painel em tempo real.",
     searchPlaceholder: "Buscar por nome, bairro, categoria ou proteção…",
@@ -33,7 +40,7 @@ const I18N = {
     docHint: "Carregando áreas naturais...",
     loaded: (n) => `${n} área(s) natural(is) carregada(s)`,
     footerNote:
-      "Ver o painel: as interações na plataforma alimentam um banco de dados global (Vercel KV) e mostram quais áreas naturais mais despertam o interesse dos visitantes.",
+      "As interações na plataforma alimentam um banco de dados global e mostram quais áreas naturais mais despertam o interesse dos visitantes.",
     close: "Fechar",
     all: "Todos",
     neighborhood: "Bairro",
@@ -43,6 +50,7 @@ const I18N = {
     protection: "Proteção",
     protectedArea: "Área protegida",
     ecoTip: "Dica ecológica",
+    illustration: "Ilustração",
     openMap: "Abrir no mapa",
     clicks: "cliques",
     rate: "Avalie",
@@ -84,6 +92,13 @@ const I18N = {
     language: "Language",
     dashboard: "Dashboard",
     heroTitle: "Ecological Education in Maricá",
+    heroBadge: "Interactive ecological guide to Maricá",
+    heroTitleA: "Ecological Education",
+    heroTitleB: "in Maricá",
+    listEyebrow: "Explore",
+    footerTitle: "Real-time environmental dashboard",
+    footerCta: "Open dashboard",
+    credits: "Ecological Education in Maricá • Visit, learn and protect 🌿",
     heroDesc:
       "Explore Maricá's protected areas, restinga being reforested, lagoons under recovery and Atlantic Forest trails. Visit, learn and help preserve: your ratings feed our real-time dashboard.",
     searchPlaceholder: "Search by name, neighborhood, category or protection…",
@@ -94,7 +109,7 @@ const I18N = {
     docHint: "Loading natural areas...",
     loaded: (n) => `${n} natural area(s) loaded`,
     footerNote:
-      "See the dashboard: all interactions feed a global database (Vercel KV), showing which natural areas visitors care about most.",
+      "All interactions feed a global database, showing which natural areas visitors care about most.",
     close: "Close",
     all: "All",
     neighborhood: "Neighborhood",
@@ -104,6 +119,7 @@ const I18N = {
     protection: "Protection",
     protectedArea: "Protected area",
     ecoTip: "Eco tip",
+    illustration: "Illustration",
     openMap: "Open map",
     clicks: "clicks",
     rate: "Rate",
@@ -145,6 +161,13 @@ const I18N = {
     language: "Idioma",
     dashboard: "Panel",
     heroTitle: "Educación Ecológica en Maricá",
+    heroBadge: "Guía ecológica interactiva de Maricá",
+    heroTitleA: "Educación Ecológica",
+    heroTitleB: "en Maricá",
+    listEyebrow: "Explora",
+    footerTitle: "Panel ambiental en tiempo real",
+    footerCta: "Abrir panel",
+    credits: "Educación Ecológica en Maricá • Visita, aprende y preserva 🌿",
     heroDesc:
       "Conoce las áreas protegidas, las restingas en reforestación, las lagunas en recuperación y los bosques de Maricá. Pasea, aprende y ayuda a preservar: tus valoraciones alimentan nuestro panel en tiempo real.",
     searchPlaceholder: "Buscar por nombre, barrio, categoría o protección…",
@@ -155,7 +178,7 @@ const I18N = {
     docHint: "Cargando áreas naturales...",
     loaded: (n) => `${n} área(s) natural(es) cargada(s)`,
     footerNote:
-      "Ver el panel: las interacciones alimentan una base de datos global (Vercel KV) y muestran qué áreas naturales despiertan más interés.",
+      "Las interacciones alimentan una base de datos global y muestran qué áreas naturales despiertan más interés.",
     close: "Cerrar",
     all: "Todos",
     neighborhood: "Barrio",
@@ -165,6 +188,7 @@ const I18N = {
     protection: "Protección",
     protectedArea: "Área protegida",
     ecoTip: "Consejo ecológico",
+    illustration: "Ilustración",
     openMap: "Abrir mapa",
     clicks: "clics",
     rate: "Valorar",
@@ -206,6 +230,13 @@ const I18N = {
     language: "语言",
     dashboard: "仪表盘",
     heroTitle: "马里卡（Maricá）生态教育",
+    heroBadge: "马里卡互动生态指南",
+    heroTitleA: "生态教育",
+    heroTitleB: "马里卡",
+    listEyebrow: "探索",
+    footerTitle: "实时环境仪表盘",
+    footerCta: "打开仪表盘",
+    credits: "马里卡生态教育 • 参观、学习、保护 🌿",
     heroDesc:
       "了解马里卡的保护区、正在重新造林的沙滩植被（restinga）、正在恢复的潟湖以及大西洋森林步道。游览、学习并帮助保护：您的评分会实时更新到我们的仪表盘。",
     searchPlaceholder: "按名称、地区、类别或保护类型搜索…",
@@ -215,7 +246,7 @@ const I18N = {
     listTitle: "值得参观与保护的地方",
     docHint: "正在加载自然区域...",
     loaded: (n) => `已加载 ${n} 个自然区域`,
-    footerNote: "查看仪表盘：所有互动都会汇入全局数据库 (Vercel KV)，显示访客最关注的自然区域。",
+    footerNote: "所有互动都会汇入全局数据库，显示访客最关注的自然区域。",
     close: "关闭",
     all: "全部",
     neighborhood: "地区",
@@ -225,6 +256,7 @@ const I18N = {
     protection: "保护",
     protectedArea: "保护区",
     ecoTip: "生态提示",
+    illustration: "插图",
     openMap: "打开地图",
     clicks: "次点击",
     rate: "评分",
@@ -327,6 +359,8 @@ const DATA_DICT = {
   "A partir das": { en: "From", es: "A partir de las", zh: "起" },
   "com entrada até as": { en: "with entry until", es: "con entrada hasta las", zh: "入场截至" },
   "24h": { en: "24h", es: "24h", zh: "24小时" },
+  "Somente de barco; observe das margens": { en: "Boat access only; watch from the shore", es: "Solo en barco; observa desde la orilla", zh: "仅可乘船到达；请在岸边观赏" },
+  "Lagoa de Maricá": { en: "Maricá Lagoon", es: "Laguna de Maricá", zh: "马里卡潟湖" },
   
   // ---> FRASE NOVA ADICIONADA AQUI <---
   "Horário pode variar, é recomendável entrar em contato (21) 96744-3131 para mais informações.": { 
@@ -434,7 +468,14 @@ const IMAGE_MAP = {
   "caminhos-de-darwin": "Caminhos.de.Darwin.jpeg",
   "morro-da-peca": "Morro-da-Peca-webp.webp",
   "farol-das-ilhas-maricas": "Farol.das.Ilhas.Marica.jpeg",
-  "feira-livre-de-sao-bento-da-lagoa": "feiralivre.jpg"
+  "feira-livre-de-sao-bento-da-lagoa": "feiralivre.jpg",
+  // Ilustrações (SVG) para áreas ainda sem foto — troque pelo arquivo da foto quando tiver
+  "lagoa-de-guarapina": "Lagoa.de.Guarapina.svg",
+  "lagoa-do-padre": "Lagoa.do.Padre.svg",
+  "lagoa-de-jacone": "Lagoa.de.Jacone.svg",
+  "ilha-cardosa": "Ilha.Cardosa.svg",
+  "ponta-do-fundao": "Ponta.do.Fundao.svg",
+  "beachrocks-de-jacone": "Beachrocks.Jacone.svg"
 };
 
 function getCommentsForPlace(p) {
@@ -772,8 +813,8 @@ function parseDocTextToPoints(text) {
     .replace(/N[úu]mero do processo/g, "\nNúmero do processo")
     .replace(/Documento:/g, "\nDocumento:")
     .replace(/Fonte:/g, "\nFonte:")
-    .replace(/Prote[çc][ãa]o:/g, "\nProteção:")
-    .replace(/Dica ecol[óo]gica:/g, "\nDica ecológica:");
+    .replace(/Prote[çc][ãa]o( \((?:en|es|zh)\))?:/g, "\nProteção$1:")
+    .replace(/Dica ecol[óo]gica( \((?:en|es|zh)\))?:/g, "\nDica ecológica$1:");
 
   const lines = fixedText
     .split(/\r?\n/g)
@@ -858,6 +899,12 @@ function parseDocTextToPoints(text) {
     if (kv("Fonte:", "fonte")) continue;
     if (kv("Proteção:", "protecao")) continue;
     if (kv("Dica ecológica:", "dica")) continue;
+    if (kv("Proteção (en):", "protecao_en")) continue;
+    if (kv("Proteção (es):", "protecao_es")) continue;
+    if (kv("Proteção (zh):", "protecao_zh")) continue;
+    if (kv("Dica ecológica (en):", "dica_en")) continue;
+    if (kv("Dica ecológica (es):", "dica_es")) continue;
+    if (kv("Dica ecológica (zh):", "dica_zh")) continue;
 
     if (cur.descricao) cur.descricao = `${cur.descricao} ${line}`.trim();
   }
@@ -929,7 +976,12 @@ function renderCard(p, analyticsState, lang) {
 
   const isProtected = isProtectedPlace(p);
   let tipToUse = p.dica || "";
-  if (lang !== "pt-BR" && CATEGORY_TIPS[p.categoria]?.[lang]) tipToUse = CATEGORY_TIPS[p.categoria][lang];
+  let protToUse = p.protecao || "";
+  if (lang !== "pt-BR") {
+    tipToUse = p[`dica_${lang}`] || CATEGORY_TIPS[p.categoria]?.[lang] || tipToUse;
+    protToUse = p[`protecao_${lang}`] || protToUse;
+  }
+  const isIllustration = /\.svg$/i.test(img);
 
   return `
     <div class="card-wrapper">
@@ -941,7 +993,8 @@ function renderCard(p, analyticsState, lang) {
         </button>
 
         <div class="card__media">
-          <img class="card__img" src="${escapeHtml(img)}" alt="${escapeHtml(p.nome)}" loading="lazy" />
+          <img class="card__img" src="${escapeHtml(img)}" alt="${escapeHtml(p.nome)}" loading="lazy" decoding="async" />
+          ${isIllustration ? `<span class="card__illustration">${escapeHtml(t("illustration", lang))}</span>` : ""}
           <div class="card__overlay">
             ${p.categoria ? `<span class="tag">${escapeHtml(tData(p.categoria, lang))}</span>` : ""}
             ${isProtected ? `<span class="tag tag--protected">🛡️ ${escapeHtml(t("protectedArea", lang))}</span>` : ""}
@@ -950,7 +1003,7 @@ function renderCard(p, analyticsState, lang) {
         
         <div class="card__body">
           <h3 class="card__title">${escapeHtml(p.nome)}</h3>
-          ${p.protecao ? `<div class="card__protection" title="${escapeHtml(t("protection", lang))}">🌿 ${escapeHtml(p.protecao)}</div>` : ""}
+          ${protToUse ? `<div class="card__protection" title="${escapeHtml(t("protection", lang))}">🌿 ${escapeHtml(protToUse)}</div>` : ""}
           <div class="card__meta">
             ${metaBits.map(m => `<span>• ${escapeHtml(m.label)}</span>`).join("")}
           </div>
@@ -1040,29 +1093,14 @@ function wireCardEvents(points, lang) {
         return;
       }
       
-      document.querySelectorAll('.card.is-expanded').forEach(c => {
-        if (c !== card) {
-          c.classList.remove('is-expanded');
-          c.closest('.card-wrapper').style.zIndex = '';
-        }
-      });
-      
-      card.classList.add('is-expanded');
-      card.closest('.card-wrapper').style.zIndex = '200';
-      
-      const overlay = document.getElementById("page-overlay");
-      if (overlay) overlay.classList.add('is-active');
+      openCard(card);
     });
 
     const closeBtn = card.querySelector('.card__close');
     if(closeBtn) {
       closeBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        card.classList.remove('is-expanded');
-        card.closest('.card-wrapper').style.zIndex = ''; 
-        
-        const overlay = document.getElementById("page-overlay");
-        if (overlay) overlay.classList.remove('is-active');
+        closeAllCards();
       });
     }
 
@@ -1351,14 +1389,41 @@ function initOverlay() {
     overlay.className = "page-overlay";
     document.body.appendChild(overlay);
 
-    overlay.addEventListener("click", () => {
-      document.querySelectorAll('.card.is-expanded').forEach(c => {
-        c.classList.remove('is-expanded');
-        c.closest('.card-wrapper').style.zIndex = '';
-      });
-      overlay.classList.remove('is-active');
+    overlay.addEventListener("click", closeAllCards);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeAllCards();
     });
   }
+}
+
+// Abre o card como uma janela centralizada (funciona em qualquer tamanho de tela)
+function openCard(card) {
+  if (card.classList.contains("is-expanded")) return;
+  closeAllCards();
+  const wrapper = card.closest(".card-wrapper");
+  wrapper.style.height = wrapper.offsetHeight + "px"; // segura o espaço no grid
+  wrapper.classList.add("is-open");
+  card.classList.add("is-expanded");
+  card.setAttribute("role", "dialog");
+  card.setAttribute("aria-modal", "true");
+  document.body.classList.add("modal-open");
+  const overlay = document.getElementById("page-overlay");
+  if (overlay) overlay.classList.add("is-active");
+  const close = card.querySelector(".card__close");
+  if (close) setTimeout(() => close.focus({ preventScroll: true }), 50);
+}
+
+function closeAllCards() {
+  document.querySelectorAll(".card.is-expanded").forEach((c) => {
+    c.classList.remove("is-expanded");
+    c.removeAttribute("role");
+    c.removeAttribute("aria-modal");
+    const w = c.closest(".card-wrapper");
+    if (w) { w.style.height = ""; w.classList.remove("is-open"); }
+  });
+  document.body.classList.remove("modal-open");
+  const overlay = document.getElementById("page-overlay");
+  if (overlay) overlay.classList.remove("is-active");
 }
 
 // ====== ALERTA AMBIENTAL + COMPROMISSO DO VISITANTE ======
